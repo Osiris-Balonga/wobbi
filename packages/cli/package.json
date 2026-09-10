@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "bin": {"wobbi":"./bin/wobbi.js"},
+  "bin": {
+    "wobbi": "./bin/wobbi.js"
+  },
   "description": "Local Wobbi V1 mascot installer; workspace only, not published",
-  "engines": {"node":">=22"}
+  "engines": {
+    "node": ">=22"
+  }
 }
