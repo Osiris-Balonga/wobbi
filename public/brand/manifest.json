@@ -1,0 +1,11 @@
+{
+  "name": "Wobbi",
+  "version": 1,
+  "colors": { "ink": "#111218", "lavender": "#9270ff", "eyes": "#ffffff" },
+  "assets": [
+    { "file": "wobbi-wordmark.png", "role": "Horizontal logo", "background": "transparent", "revision": "Corrected Wobbi spelling; separated white eyes with small pupils" },
+    { "file": "wobbi-symbol.png", "role": "App symbol and favicon", "background": "transparent", "revision": "Square symbol with legible eyes" }
+  ],
+  "source": "Original user-supplied ChatGPT logo, edited with built-in Imagegen",
+  "usage": "Use the symbol beside live Wobbi text in the studio so the wordmark follows the global theme. Original files remain preserved at the repository root."
+}
