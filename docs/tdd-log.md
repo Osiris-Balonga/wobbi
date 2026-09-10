@@ -10,3 +10,6 @@ RED: npm run test:components — missing Mascot.jsx. GREEN: 3 tests pass. Same s
 
 ## 3. Code generation
 RED: npm run test:contracts — missing generator module. GREEN: 2 contracts and 5 domain/unit tests pass. Contracts write real sources to OS temporary folders, compile with esbuild and import/render each state. Node environment is used for filesystem/compiler contracts to avoid jsdom realm issues. Browser and Node adapters read the same canonical source as raw text, so production minification cannot corrupt exported functions.
+
+## 4. CLI
+RED: npm run test:cli — 9 failures, missing CLI executable. GREEN: 9 tests pass in temporary directories. Added local registry installs, custom JSON configurations, Next.js, path handling and conflict preflight. No files are written on a detected conflict; --force is explicit.
