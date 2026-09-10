@@ -1,0 +1,25 @@
+{
+  "name": "wobbi-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": ["packages/cli"],
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test:unit": "vitest run tests/unit",
+    "test:components": "vitest run tests/components",
+    "test:integration": "vitest run tests/integration",
+    "test:contracts": "vitest run tests/contracts",
+    "test:cli": "vitest run packages/cli/tests",
+    "test:a11y": "vitest run tests/a11y",
+    "test:e2e": "playwright test tests/e2e",
+    "test:visual": "playwright test tests/visual",
+    "test:all": "npm run test:unit && npm run test:components && npm run test:integration && npm run test:contracts && npm run test:cli && npm run test:a11y && npm run test:e2e && npm run test:visual",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "cli": "node packages/cli/bin/wobbi.js"
+  }
+}
