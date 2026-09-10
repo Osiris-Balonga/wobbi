@@ -13,3 +13,6 @@ RED: npm run test:contracts — missing generator module. GREEN: 2 contracts and
 
 ## 4. CLI
 RED: npm run test:cli — 9 failures, missing CLI executable. GREEN: 9 tests pass in temporary directories. Added local registry installs, custom JSON configurations, Next.js, path handling and conflict preflight. No files are written on a detected conflict; --force is explicit.
+
+## 5. Studio workflows
+RED: focused component/integration/a11y run — missing App.jsx (three suites). GREEN: 12 renderer/studio/integration/accessibility tests pass; build succeeds. Added all design controls, synchronized preview/grid/motion, saved settings, coherent global theme, actual ZIP/config downloads, copy feedback and accessible tabs. A lint check caught synchronous effect state updates; persistence now runs at the edit boundary. Fonts are bundled locally.

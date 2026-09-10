@@ -25,6 +25,7 @@
     "cli": "node packages/cli/bin/wobbi.js"
   },
   "dependencies": {
+    "@fontsource-variable/dm-sans": "^5.3.0",
     "fflate": "^0.8.3",
     "lucide-react": "^1.44.0",
     "react": "^19.3.0",
