@@ -1,22 +1,259 @@
-import {titleCase} from '../ui/labels.js';
-import {useState} from 'react';
-import {Check,RotateCcw,Settings2,Code2,Accessibility,SlidersHorizontal,Download} from 'lucide-react';
-import {createConfig,REACTIONS,normalizeSlug,validateConfig} from '../../packages/core/config.js';
-import {Mascot} from '../mascot/Mascot.jsx';
-import {Field,Switch,Segmented} from '../ui/Controls.jsx';
-export function SettingsNav({config}) {return <div className="panel-body settings-nav"><div className="settings-identity"><span style={{background:config.background.color}}><Mascot config={config} size={65} playing={false}/></span><div><strong>{config.name}</strong><small>8 reactions</small></div></div>{[['identity','General',Settings2],['installation','Code & install',Code2],['defaults','Defaults',SlidersHorizontal],['accessibility','Accessibility',Accessibility],['export-panel','Export',Download]].map(([id,label,Icon])=><a href={`#${id}`} key={id}><Icon size={18}/>{label}</a>)}</div>;}
-export function SettingsPanel({config,setConfig,notify}) {
- const [draft,setDraft]=useState(config);
- const [errors,setErrors]=useState([]);
- const patch=changes=>setDraft(current=>createConfig({...current,...changes}));
- const save=event=>{event.preventDefault();const problems=validateConfig(draft);setErrors(problems);if(!problems.length){setConfig(draft);notify('Settings saved');}};
- return <div className="settings-workspace"><div className="settings-heading"><h1>Mascot settings</h1><p>Make {config.name} feel at home in your app.</p></div><form onSubmit={save} noValidate>
-  <section className="settings-section" id="identity"><div className="identity-fields"><h2>Identity</h2><Field label="Mascot name"><input value={draft.name} onChange={e=>patch({name:e.target.value,slug:normalizeSlug(e.target.value)})}/></Field><Field label="Component name"><input value={draft.componentName} aria-invalid={errors.some(e=>e.startsWith('Component'))} onChange={e=>patch({componentName:e.target.value})}/></Field></div><div className="identity-preview" style={{background:draft.background.color}}><Mascot config={draft} size={125} playing={false}/></div></section>
-  <section className="settings-section" id="installation"><h2>Code & installation</h2><div className="settings-fields three"><Field label="Default folder"><input value={draft.export.folder} onChange={e=>patch({export:{...draft.export,folder:e.target.value}})}/></Field><Field label="Code format"><select value={draft.export.format} onChange={e=>patch({export:{...draft.export,format:e.target.value}})}><option value="javascript">JavaScript · JSX</option></select></Field><Field label="Framework"><select value={draft.export.framework} onChange={e=>patch({export:{...draft.export,framework:e.target.value}})}><option value="react">React</option><option value="next">Next.js</option></select></Field></div></section>
-  <section className="settings-section" id="defaults"><h2>Default behavior</h2><div className="settings-fields three"><Field label="Default state"><select value={draft.defaultState} onChange={e=>patch({defaultState:e.target.value})}>{REACTIONS.map(state=><option key={state} value={state}>{titleCase(state)}</option>)}</select></Field><Field label="Default size"><input type="number" min="48" max="512" value={draft.size} onChange={e=>patch({size:Number(e.target.value)})}/></Field><div className="field"><span>Default playback</span><Segmented label="Default playback" value={draft.reactions[draft.defaultState].playback} options={['loop','once']} onChange={playback=>patch({reactions:{...draft.reactions,[draft.defaultState]:{...draft.reactions[draft.defaultState],playback}}})}/></div></div></section>
-  <section className="settings-section" id="accessibility"><h2>Accessibility</h2><div className="accessibility-settings"><div><div className="switch-label"><span>Respect prefers-reduced-motion</span><Switch label="Respect prefers-reduced-motion" checked={draft.accessibility.respectReducedMotion} onChange={respectReducedMotion=>patch({accessibility:{...draft.accessibility,respectReducedMotion}})}/></div><p>Follow your visitor’s motion preference.</p></div><div><div className="switch-label"><span>Pause when off-screen</span><Switch label="Pause when off-screen" checked={draft.accessibility.pauseOffscreen} onChange={pauseOffscreen=>patch({accessibility:{...draft.accessibility,pauseOffscreen}})}/></div><p>Save a little energy while out of view.</p></div><Field label="Accessible label"><input value={draft.accessibility.label} onChange={e=>patch({accessibility:{...draft.accessibility,label:e.target.value}})}/></Field></div></section>
-  {errors.length>0&&<div className="form-errors" role="alert">{errors.map(error=><p key={error}>{error}</p>)}</div>}
-  <div className="settings-actions"><button type="button" className="subtle-button" onClick={()=>{setDraft(createConfig());setErrors([]);}}><RotateCcw size={16}/>Reset defaults</button><button type="submit" className="primary"><Check size={17}/>Save settings</button></div>
- </form><p className="settings-note">Saved on this device. No account, no cloud, just your little buddy.</p></div>;
+import { titleCase } from '../ui/labels.js';
+import { useState } from 'react';
+import {
+  Check,
+  RotateCcw,
+  Settings2,
+  Code2,
+  Accessibility,
+  SlidersHorizontal,
+  Download,
+} from 'lucide-react';
+import {
+  createConfig,
+  REACTIONS,
+  normalizeSlug,
+  validateConfig,
+} from '../../packages/core/config.js';
+import { Mascot } from '../mascot/Mascot.jsx';
+import { Field, Switch, Segmented } from '../ui/Controls.jsx';
+export function SettingsNav({ config }) {
+  return (
+    <div className="panel-body settings-nav">
+      <div className="settings-identity">
+        <span style={{ background: config.background.color }}>
+          <Mascot config={config} size={65} playing={false} />
+        </span>
+        <div>
+          <strong>{config.name}</strong>
+          <small>8 reactions</small>
+        </div>
+      </div>
+      {[
+        ['identity', 'General', Settings2],
+        ['installation', 'Code & install', Code2],
+        ['defaults', 'Defaults', SlidersHorizontal],
+        ['accessibility', 'Accessibility', Accessibility],
+        ['export-panel', 'Export', Download],
+      ].map(([id, label, Icon]) => (
+        <a href={`#${id}`} key={id}>
+          <Icon size={18} />
+          {label}
+        </a>
+      ))}
+    </div>
+  );
 }
-
+export function SettingsPanel({ config, setConfig, notify }) {
+  const [draft, setDraft] = useState(config);
+  const [errors, setErrors] = useState([]);
+  const patch = (changes) =>
+    setDraft((current) => createConfig({ ...current, ...changes }));
+  const save = (event) => {
+    event.preventDefault();
+    const problems = validateConfig(draft);
+    setErrors(problems);
+    if (!problems.length) {
+      setConfig(draft);
+      notify('Settings saved');
+    }
+  };
+  return (
+    <div className="settings-workspace">
+      <div className="settings-heading">
+        <h1>Mascot settings</h1>
+        <p>Make {config.name} feel at home in your app.</p>
+      </div>
+      <form onSubmit={save} noValidate>
+        <section className="settings-section" id="identity">
+          <div className="identity-fields">
+            <h2>Identity</h2>
+            <Field label="Mascot name">
+              <input
+                value={draft.name}
+                onChange={(e) =>
+                  patch({
+                    name: e.target.value,
+                    slug: normalizeSlug(e.target.value),
+                  })
+                }
+              />
+            </Field>
+            <Field label="Component name">
+              <input
+                value={draft.componentName}
+                aria-invalid={errors.some((e) => e.startsWith('Component'))}
+                onChange={(e) => patch({ componentName: e.target.value })}
+              />
+            </Field>
+          </div>
+          <div
+            className="identity-preview"
+            style={{ background: draft.background.color }}
+          >
+            <Mascot config={draft} size={125} playing={false} />
+          </div>
+        </section>
+        <section className="settings-section" id="installation">
+          <h2>Code & installation</h2>
+          <div className="settings-fields three">
+            <Field label="Default folder">
+              <input
+                value={draft.export.folder}
+                onChange={(e) =>
+                  patch({ export: { ...draft.export, folder: e.target.value } })
+                }
+              />
+            </Field>
+            <Field label="Code format">
+              <select
+                value={draft.export.format}
+                onChange={(e) =>
+                  patch({ export: { ...draft.export, format: e.target.value } })
+                }
+              >
+                <option value="javascript">JavaScript · JSX</option>
+              </select>
+            </Field>
+            <Field label="Framework">
+              <select
+                value={draft.export.framework}
+                onChange={(e) =>
+                  patch({
+                    export: { ...draft.export, framework: e.target.value },
+                  })
+                }
+              >
+                <option value="react">React</option>
+                <option value="next">Next.js</option>
+              </select>
+            </Field>
+          </div>
+        </section>
+        <section className="settings-section" id="defaults">
+          <h2>Default behavior</h2>
+          <div className="settings-fields three">
+            <Field label="Default state">
+              <select
+                value={draft.defaultState}
+                onChange={(e) => patch({ defaultState: e.target.value })}
+              >
+                {REACTIONS.map((state) => (
+                  <option key={state} value={state}>
+                    {titleCase(state)}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Default size">
+              <input
+                type="number"
+                min="48"
+                max="512"
+                value={draft.size}
+                onChange={(e) => patch({ size: Number(e.target.value) })}
+              />
+            </Field>
+            <div className="field">
+              <span>Default playback</span>
+              <Segmented
+                label="Default playback"
+                value={draft.reactions[draft.defaultState].playback}
+                options={['loop', 'once']}
+                onChange={(playback) =>
+                  patch({
+                    reactions: {
+                      ...draft.reactions,
+                      [draft.defaultState]: {
+                        ...draft.reactions[draft.defaultState],
+                        playback,
+                      },
+                    },
+                  })
+                }
+              />
+            </div>
+          </div>
+        </section>
+        <section className="settings-section" id="accessibility">
+          <h2>Accessibility</h2>
+          <div className="accessibility-settings">
+            <div>
+              <div className="switch-label">
+                <span>Respect prefers-reduced-motion</span>
+                <Switch
+                  label="Respect prefers-reduced-motion"
+                  checked={draft.accessibility.respectReducedMotion}
+                  onChange={(respectReducedMotion) =>
+                    patch({
+                      accessibility: {
+                        ...draft.accessibility,
+                        respectReducedMotion,
+                      },
+                    })
+                  }
+                />
+              </div>
+              <p>Follow your visitor’s motion preference.</p>
+            </div>
+            <div>
+              <div className="switch-label">
+                <span>Pause when off-screen</span>
+                <Switch
+                  label="Pause when off-screen"
+                  checked={draft.accessibility.pauseOffscreen}
+                  onChange={(pauseOffscreen) =>
+                    patch({
+                      accessibility: { ...draft.accessibility, pauseOffscreen },
+                    })
+                  }
+                />
+              </div>
+              <p>Save a little energy while out of view.</p>
+            </div>
+            <Field label="Accessible label">
+              <input
+                value={draft.accessibility.label}
+                onChange={(e) =>
+                  patch({
+                    accessibility: {
+                      ...draft.accessibility,
+                      label: e.target.value,
+                    },
+                  })
+                }
+              />
+            </Field>
+          </div>
+        </section>
+        {errors.length > 0 && (
+          <div className="form-errors" role="alert">
+            {errors.map((error) => (
+              <p key={error}>{error}</p>
+            ))}
+          </div>
+        )}
+        <div className="settings-actions">
+          <button
+            type="button"
+            className="subtle-button"
+            onClick={() => {
+              setDraft(createConfig());
+              setErrors([]);
+            }}
+          >
+            <RotateCcw size={16} />
+            Reset defaults
+          </button>
+          <button type="submit" className="primary">
+            <Check size={17} />
+            Save settings
+          </button>
+        </div>
+      </form>
+      <p className="settings-note">
+        Saved on this device. No account, no cloud, just your little buddy.
+      </p>
+    </div>
+  );
+}

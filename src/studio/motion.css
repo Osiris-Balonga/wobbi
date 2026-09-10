@@ -1,0 +1,68 @@
+.motion-controls > .field {
+  margin-bottom: 23px;
+}
+.movement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.movement-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--line);
+  padding: 8px 6px;
+  border-radius: 7px;
+  min-height: 43px;
+}
+.movement-row > span {
+  font-size: 10px;
+  flex: 1;
+}
+.move-order {
+  display: flex;
+}
+.move-order button {
+  padding: 0 2px;
+  width: 24px;
+  height: 26px;
+  color: var(--muted);
+}
+.add-movement {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.add-movement select {
+  width: 100%;
+}
+.add-movement button {
+  width: 100%;
+}
+.panel-tip {
+  border-top: 1px solid var(--line);
+  padding-top: 17px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+.playback-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.subtle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 9px 12px;
+  font-size: 11px;
+  border-radius: 6px;
+}
+.subtle-button:hover {
+  background: var(--subtle);
+}

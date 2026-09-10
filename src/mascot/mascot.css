@@ -1,3 +1,15 @@
-.wobbi-mascot { display: block; overflow: visible; flex: none; }
-.wobbi-mascot [data-motion] { transform-box: fill-box; transform-origin: center; }
-@media (prefers-reduced-motion: reduce) { .wobbi-mascot[data-respect-motion="true"] [data-motion] { animation: none !important; transform: none !important; } }
+.wobbi-mascot {
+  display: block;
+  overflow: visible;
+  flex: none;
+}
+.wobbi-mascot [data-motion] {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wobbi-mascot[data-respect-motion='true'] [data-motion] {
+    animation: none !important;
+    transform: none !important;
+  }
+}

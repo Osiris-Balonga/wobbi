@@ -1,1 +1,2 @@
-export const titleCase=(value)=>value.replace(/(^|[- ])\w/g,s=>s.replace('-',' ').toUpperCase());
+export const titleCase = (value) =>
+  value.replace(/(^|[- ])\w/g, (s) => s.replace('-', ' ').toUpperCase());
