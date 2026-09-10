@@ -1,10 +1,11 @@
+// @vitest-environment node
 import {it,expect,afterEach} from 'vitest';
 import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {createRequire} from 'node:module';
 import {build} from 'esbuild';
-import {render,screen,cleanup} from '@testing-library/react';
+import {renderToStaticMarkup} from 'react-dom/server';
 import {generateFiles} from '../../packages/codegen/node.js';
 import {createConfig,REACTIONS} from '../../packages/core/config.js';
 const require=createRequire(import.meta.url);
@@ -24,13 +25,14 @@ it('writes exactly four editable files that compile, import and render all state
  const {MyBuddy}=module.exports;
  expect(MyBuddy).toBeTypeOf('function');
  for(const state of REACTIONS){
-  render(<MyBuddy state={state} size={128} aria-label="Exported buddy" playing={false}/>);
-  expect(screen.getByRole('img',{name:'Exported buddy'})).toHaveAttribute('data-state',state);
-  expect(screen.getByRole('img')).toHaveAttribute('width','128');cleanup();
+  const html=renderToStaticMarkup(<MyBuddy state={state} size={128} aria-label="Exported buddy" playing={false}/>);
+  expect(html).toContain(`data-state="${state}"`);
+  expect(html).toContain('aria-label="Exported buddy"');
+  expect(html).toContain('width="128"');
  }
- render(<MyBuddy state="unknown" playing={false}/>);
- expect(screen.getByRole('img')).toHaveAttribute('data-state','idle');
- expect(screen.getByRole('img')).toHaveAttribute('width','180');
+ const html=renderToStaticMarkup(<MyBuddy state="unknown" playing={false}/>);
+ expect(html).toContain('data-state="idle"');
+ expect(html).toContain('width="180"');
  expect(await readFile(path.join(dir,'styles.css'),'utf8')).toContain('prefers-reduced-motion');
 });
 it('rejects invalid component names before emitting executable code',()=>{

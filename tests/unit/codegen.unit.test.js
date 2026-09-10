@@ -1,3 +1,4 @@
+// @vitest-environment node
 import {it,expect} from 'vitest';
 import {generateFiles} from '../../packages/codegen/node.js';
 import {createConfig} from '../../packages/core/config.js';
