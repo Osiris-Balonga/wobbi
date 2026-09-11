@@ -3,6 +3,7 @@ import renderModelSource from '../core/render-model.js?raw';
 import renderEffectsSource from '../core/render-effects.js?raw';
 import renderSource from '../core/render.js?raw';
 import motionSource from '../core/motion.js?raw';
+import svgAttributesSource from '../core/svg-attributes.js?raw';
 import {
   generateSource,
   generateVanilla,
@@ -15,6 +16,7 @@ export const generateVanillaFiles = (config) =>
     renderEffects: renderEffectsSource,
     render: renderSource,
     motion: motionSource,
+    svgAttributes: svgAttributesSource,
   });
 export const generateFiles = (config) =>
   generateSource(config, {
@@ -23,6 +25,7 @@ export const generateFiles = (config) =>
     renderEffects: renderEffectsSource,
     render: renderSource,
     motion: motionSource,
+    svgAttributes: svgAttributesSource,
   });
 export const generateVueFiles = (config) =>
   generateVueSource(config, {
@@ -31,4 +34,5 @@ export const generateVueFiles = (config) =>
     renderEffects: renderEffectsSource,
     render: renderSource,
     motion: motionSource,
+    svgAttributes: svgAttributesSource,
   });

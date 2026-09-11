@@ -12,6 +12,7 @@ const sources = {
   renderEffects: source('render-effects'),
   render: source('render'),
   motion: source('motion'),
+  svgAttributes: source('svg-attributes'),
 };
 export const generateFiles = (config) => generateSource(config, sources);
 export const generateVueFiles = (config) => generateVueSource(config, sources);

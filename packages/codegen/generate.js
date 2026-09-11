@@ -499,6 +499,8 @@ const { renderParts } = window.WobbiRenderer;
 const { mountCharacter, reactionDuration } = window.WobbiMotion;
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
+${stripModuleSyntax(cleanSource(sources.svgAttributes))}
+
 function node(tag, props, ...children) {
   const element = document.createElementNS(SVG_NAMESPACE, tag);
   for (const [key, value] of Object.entries(props || {})) {
@@ -507,8 +509,7 @@ function node(tag, props, ...children) {
       Object.assign(element.style, value);
       continue;
     }
-    const attribute = key === 'viewBox' ? key : key.replace(/[A-Z]/g, (letter) => '-' + letter.toLowerCase());
-    element.setAttribute(attribute, String(value));
+    element.setAttribute(svgAttributeName(key), String(value));
   }
   for (const child of children.flat(Infinity)) {
     if (child != null) element.append(child);

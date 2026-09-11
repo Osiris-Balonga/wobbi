@@ -35,6 +35,9 @@ it('provides separate Vue and standalone JavaScript deliveries', () => {
   const vanilla = generateVanillaFiles(config);
   expect(vanilla['config.js']).toContain('"depth": "deep"');
   expect(vanilla['renderer.js']).toContain('data-depth');
+  expect(vanilla['mascot.js']).toContain("'gradientUnits'");
+  expect(vanilla['mascot.js']).toContain('svgAttributeName(key)');
+  expect(vanilla['mascot.js']).not.toContain("key === 'viewBox'");
   expect(Object.values(vanilla).join('\n')).not.toMatch(/^\s*\/\/|\/\*/m);
 });
 

@@ -1,4 +1,5 @@
 import { renderParts } from '../../packages/core/render.js';
+import { svgAttributeName } from '../../packages/core/svg-attributes.js';
 import {
   sampleCharacter,
   applyCharacterFrame,
@@ -12,12 +13,7 @@ export function svgNode(tag, props, ...children) {
       Object.assign(el.style, value);
       continue;
     }
-    el.setAttribute(
-      key === 'viewBox'
-        ? key
-        : key.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase()),
-      String(value),
-    );
+    el.setAttribute(svgAttributeName(key), String(value));
   }
   children.flat(Infinity).forEach((child) => {
     if (child != null) el.append(child);

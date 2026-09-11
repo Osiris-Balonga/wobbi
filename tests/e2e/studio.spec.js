@@ -287,7 +287,11 @@ test('vanilla download has a working state API, pointer response and disposal', 
   page,
   context,
 }) => {
+  test.setTimeout(60000);
   await page.goto('/');
+  await page.getByRole('button', { name: 'Forme : Rond', exact: true }).click();
+  await page.getByText('Apparence du corps', { exact: true }).click();
+  await page.getByRole('button', { name: 'Profond', exact: true }).click();
   await page.getByRole('button', { name: 'Exporter', exact: true }).click();
   await page.getByRole('button', { name: 'JavaScript', exact: true }).click();
   const item = await download(page, 'Télécharger les fichiers'),
@@ -327,8 +331,37 @@ test('vanilla download has a working state API, pointer response and disposal', 
   );
   await expect(preview.locator('[data-part="body-depth"]')).toHaveAttribute(
     'data-depth',
-    'soft',
+    'deep',
   );
+  await expect(preview.locator('radialGradient')).toHaveAttribute(
+    'gradientUnits',
+    'userSpaceOnUse',
+  );
+  await expect(preview.locator('radialGradient')).not.toHaveAttribute(
+    'gradient-units',
+  );
+  const surfaceDifference = await preview
+    .locator('svg')
+    .evaluate(async (svg) => {
+      const source = new XMLSerializer().serializeToString(svg);
+      const image = new Image();
+      image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 288;
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0, 288, 288);
+      const colorAt = (x, y) =>
+        Array.from(context.getImageData(x + 16, y + 16, 1, 1).data).slice(0, 3);
+      const highlight = colorAt(85, 75);
+      const shade = colorAt(180, 190);
+      return highlight.reduce(
+        (difference, channel, index) =>
+          difference + Math.abs(channel - shade[index]),
+        0,
+      );
+    });
+  expect(surfaceDifference).toBeGreaterThan(45);
   await preview.evaluate(() => window.mascot.setState('loading'));
   await expect(preview.locator('svg')).toHaveAttribute('data-state', 'loading');
   await preview.locator('svg').press('Enter');
@@ -372,11 +405,19 @@ test('exports decodable SVG, PNG, GIF and WebM without starting a download on op
             hasBackground: Boolean(
               document.documentElement.querySelector(':scope > rect'),
             ),
+            gradientUnits:
+              document
+                .querySelector('radialGradient')
+                ?.getAttribute('gradientUnits') || null,
           };
         })(),
       svg.bytes.toString(),
     ),
-  ).toEqual({ error: null, hasBackground: true });
+  ).toEqual({
+    error: null,
+    hasBackground: true,
+    gradientUnits: 'userSpaceOnUse',
+  });
   await page.getByRole('button', { name: 'PNG', exact: true }).click();
   const png = await download(page, 'Télécharger l’image');
   expect(png.bytes.subarray(1, 4).toString()).toBe('PNG');
