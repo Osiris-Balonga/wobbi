@@ -5,8 +5,7 @@ export const shapeLabels = {
   'rounded-square': 'Carré arrondi',
   cloud: 'Nuage',
   drop: 'Goutte',
-  oval: 'Ovale',
-  triangle: 'Triangle',
+  oval: 'Œuf',
 };
 export const eyeLabels = {
   classic: 'Grands yeux',
@@ -60,6 +59,7 @@ export const headLabels = {
 export const accessoryLabels = {
   none: 'Sans',
   glasses: 'Lunettes',
+  sunglasses: 'Lunettes de soleil',
   headphones: 'Casque',
   bowtie: 'Nœud papillon',
   monocle: 'Monocle',

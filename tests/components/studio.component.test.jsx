@@ -198,14 +198,21 @@ it('customizes illustrated parts and reverses an accessory edit', () => {
 it('expands and reduces the compact shape, eye and mouth grids', () => {
   render(<App />);
   expect(
-    screen.queryByRole('button', { name: 'Forme : Goutte', exact: true }),
+    screen.queryByRole('button', {
+      name: 'Forme : Carré arrondi',
+      exact: true,
+    }),
   ).not.toBeInTheDocument();
   fireEvent.click(
     screen.getByRole('button', { name: 'Voir 4 formes de plus', exact: true }),
   );
   expect(
-    screen.getByRole('button', { name: 'Forme : Goutte', exact: true }),
+    screen.getByRole('button', { name: 'Forme : Œuf', exact: true }),
   ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Forme : Triangle', exact: true }),
+  ).not.toBeInTheDocument();
+  expect(document.querySelector('.choice-grid.columns-3')).toBeTruthy();
   fireEvent.click(
     screen.getByRole('button', { name: 'Réduire forme', exact: true }),
   );
@@ -270,6 +277,63 @@ it('shows and applies both eye tones only for eye families that use pupils', () 
   expect(
     screen.queryByRole('group', { name: 'Couleur des pupilles' }),
   ).not.toBeInTheDocument();
+});
+it('offers a lash colour only for eye families that draw lashes', () => {
+  const { container } = render(<App />);
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Voir 9 regards de plus', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Yeux : Paupières', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Apparence des yeux', exact: true }),
+  );
+  expect(
+    screen.getByRole('group', { name: 'Couleur des cils' }),
+  ).toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Couleur des cils #9270ff',
+      exact: true,
+    }),
+  );
+  expect(
+    container.querySelector('.mascot-hit [data-eye-lash="sleepy"]'),
+  ).toHaveAttribute('stroke', '#9270ff');
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Yeux : Points', exact: true }),
+  );
+  expect(
+    screen.queryByRole('group', { name: 'Couleur des cils' }),
+  ).not.toBeInTheDocument();
+});
+it('can collapse a choice grid while an extra option is selected', () => {
+  render(<App />);
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Voir 3 nez de plus', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Nez, museau ou bec : Museau',
+      exact: true,
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Réduire nez, museau ou bec',
+      exact: true,
+    }),
+  );
+  expect(
+    screen.getByRole('button', {
+      name: 'Nez, museau ou bec : Museau',
+      exact: true,
+    }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  expect(
+    screen.getByRole('button', { name: 'Voir 3 nez de plus', exact: true }),
+  ).toHaveAttribute('aria-expanded', 'false');
 });
 it.each(['Museau', 'Bec'])(
   'keeps mouth choices visible but disabled with %s',
@@ -344,13 +408,22 @@ it('only offers details compatible with the selected silhouette', () => {
     }),
   );
   fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Voir 6 accessoires de plus',
+      exact: true,
+    }),
+  );
+  fireEvent.click(
     screen.getByRole('button', { name: 'Accessoires : Casque', exact: true }),
   );
   fireEvent.click(
     screen.getByRole('button', { name: 'Voir 4 formes de plus', exact: true }),
   );
   fireEvent.click(
-    screen.getByRole('button', { name: 'Forme : Triangle', exact: true }),
+    screen.getByRole('button', {
+      name: 'Forme : Carré arrondi',
+      exact: true,
+    }),
   );
   expect(
     screen.queryByRole('button', {
@@ -359,16 +432,13 @@ it('only offers details compatible with the selected silhouette', () => {
     }),
   ).not.toBeInTheDocument();
   expect(
-    screen.queryByRole('button', {
+    screen.getByRole('button', {
       name: 'Accessoires : Casque',
       exact: true,
     }),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.getByRole('button', { name: 'Tête : Sans', exact: true }),
   ).toHaveAttribute('aria-pressed', 'true');
   expect(
-    screen.getByRole('button', { name: 'Accessoires : Sans', exact: true }),
+    screen.getByRole('button', { name: 'Tête : Sans', exact: true }),
   ).toHaveAttribute('aria-pressed', 'true');
 });
 it('accepts an exact colour and opens an export choice without downloading', async () => {

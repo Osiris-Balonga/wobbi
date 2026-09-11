@@ -11,9 +11,9 @@ export const BODY_PATHS = {
     'M57 189 C13 169 21 124 49 112 C33 70 79 43 109 66 C142 25 194 52 195 87 C241 89 251 144 220 164 C235 211 177 234 149 213 C111 239 70 222 57 189Z',
   drop: 'M134 29 C141 85 217 104 217 162 C217 240 41 241 41 162 C41 105 109 85 134 29Z',
   oval: 'M204 130 C204 191 174 228 128 228 C82 228 52 191 52 130 C52 67 82 28 128 28 C174 28 204 67 204 130Z',
-  triangle:
-    'M112 51 Q128 26 144 51 L222 185 Q240 216 206 216 H50 Q16 216 34 185Z',
 };
+
+export const LASHED_EYES = ['sleepy', 'angry', 'wink'];
 
 // Attachment points are tuned per silhouette instead of assuming every body is
 // the same circle. Head details use the crown, while glasses and headphones use
@@ -29,6 +29,10 @@ export const SHAPE_FITS = {
     templeHalf: 72,
     cheekX: [70, 186],
     cheekRadiusX: 14,
+    roundEarX: [84, 192],
+    roundEarY: [65, 58],
+    hornHalf: 48,
+    hornX: [80, 198],
   },
   ghost: {
     faceY: 0,
@@ -96,17 +100,6 @@ export const SHAPE_FITS = {
     glassesArms: false,
     cheekX: [72, 184],
     cheekRadiusX: 12,
-  },
-  triangle: {
-    faceY: 19,
-    crownX: 128,
-    crownY: 88,
-    crownHalf: 38,
-    sideLeft: 33,
-    sideRight: 223,
-    templeHalf: 65,
-    cheekX: [69, 187],
-    cheekRadiusX: 14,
   },
 };
 

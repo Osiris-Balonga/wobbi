@@ -111,8 +111,6 @@ export function sampleCharacter(config, state, time, look = { x: 0, y: 0 }) {
   }
   if (state === 'thinking') {
     frame.rotate = Math.sin((Math.min(t / 1.1, 1) * Math.PI) / 2) * 7;
-    frame.gx += 5;
-    frame.gy -= 6;
   }
   if (state === 'loading') {
     frame.y = Math.sin(t * 2) * 2;

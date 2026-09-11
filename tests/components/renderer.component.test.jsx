@@ -138,19 +138,33 @@ it('renders every allowed detail without invalid geometry', () => {
     }
   }
 });
-it('keeps incompatible details out of valid render configurations', () => {
-  const config = createConfig({
-    shape: 'triangle',
-    head: 'none',
-    accessory: 'none',
-  });
-  expect(config).toMatchObject({ head: 'none', accessory: 'none' });
-  render(<Mascot config={config} playing={false} />);
-  expect(document.querySelector('[data-part="ear-0"]')).not.toBeInTheDocument();
+it('renders fitted Wobbi head details and the sunglasses accessory', () => {
+  const { rerender } = render(
+    <Mascot config={createConfig({ head: 'round-ears' })} playing={false} />,
+  );
   expect(
-    document.querySelector('[data-accessory-piece="left-earcup"]'),
-  ).not.toBeInTheDocument();
-  expect(document.querySelector('[data-part="hands"]')).not.toBeInTheDocument();
+    document.querySelector('[data-part="round-ear-0"] ellipse'),
+  ).toHaveAttribute('cx', '84');
+  expect(
+    document.querySelector('[data-part="round-ear-1"] ellipse'),
+  ).toHaveAttribute('cx', '192');
+  rerender(<Mascot config={createConfig({ head: 'horns' })} playing={false} />);
+  expect(document.querySelector('[data-head-style="horns"]')).toHaveAttribute(
+    'd',
+    expect.stringContaining('M85 80'),
+  );
+  rerender(
+    <Mascot
+      config={createConfig({ accessory: 'sunglasses' })}
+      playing={false}
+    />,
+  );
+  expect(
+    document.querySelector('[data-accessory-style="sunglasses"]'),
+  ).toBeTruthy();
+  expect(
+    document.querySelector('[data-accessory-piece="left-sunglass-lens"]'),
+  ).toBeTruthy();
 });
 it('uses body contrast for closed eyes and keeps pupilled eyes clean', () => {
   const { rerender } = render(
@@ -182,6 +196,26 @@ it('uses body contrast for closed eyes and keeps pupilled eyes clean', () => {
     />,
   );
   expect(document.querySelector('[data-eye-depth]')).not.toBeInTheDocument();
+});
+it('keeps thinking pupils sideways and applies custom lash colour', () => {
+  const { rerender } = render(
+    <Mascot config={createConfig()} state="thinking" playing={false} />,
+  );
+  const thinkingPupil = document.querySelector(
+    '[data-eye-wrap="0"] [data-part="pupil"] ellipse',
+  );
+  expect(thinkingPupil).toHaveAttribute('cx', '112');
+  expect(thinkingPupil).toHaveAttribute('cy', '119');
+  rerender(
+    <Mascot
+      config={createConfig({ eyes: 'sleepy', lashColor: '#9270ff' })}
+      playing={false}
+    />,
+  );
+  expect(document.querySelector('[data-eye-lash="sleepy"]')).toHaveAttribute(
+    'stroke',
+    '#9270ff',
+  );
 });
 it('renders the moustache, restrained fangs and a single Wobbi silhouette', () => {
   const { rerender } = render(

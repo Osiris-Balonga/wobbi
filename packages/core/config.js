@@ -18,7 +18,6 @@ export const SHAPES = [
   'cloud',
   'drop',
   'oval',
-  'triangle',
 ];
 export const EYES = [
   'classic',
@@ -63,6 +62,7 @@ export const HEADS = [
 export const ACCESSORIES = [
   'none',
   'glasses',
+  'sunglasses',
   'headphones',
   'bowtie',
   'monocle',
@@ -78,7 +78,6 @@ export const HEADS_BY_SHAPE = {
   cloud: ['none', 'tuft', 'curl', 'halo'],
   drop: ['none', 'halo'],
   oval: HEADS,
-  triangle: ['none', 'halo'],
 };
 export const ACCESSORIES_BY_SHAPE = {
   wobbi: ACCESSORIES,
@@ -88,7 +87,6 @@ export const ACCESSORIES_BY_SHAPE = {
   cloud: ACCESSORIES,
   drop: ACCESSORIES,
   oval: ACCESSORIES,
-  triangle: ['none', 'glasses', 'bowtie', 'monocle', 'blush'],
 };
 export const headsForShape = (shape) => HEADS_BY_SHAPE[shape] || ['none'];
 export const accessoriesForShape = (shape) =>
@@ -171,6 +169,7 @@ export function createConfig(overrides = {}) {
     noseColor: '#111218',
     browColor: '#111218',
     pupilColor: '#111218',
+    lashColor: '#111218',
     eyeOutlineColor: '#111218',
     eyeOutlineWidth: 0,
     head: 'none',
@@ -243,6 +242,7 @@ const CONFIG_KEYS = [
   'noseColor',
   'browColor',
   'pupilColor',
+  'lashColor',
   'eyeOutlineColor',
   'eyeOutlineWidth',
   'head',
@@ -336,11 +336,14 @@ export function validateConfig(config) {
     'eyeColor',
     'outlineColor',
     'pupilColor',
+    'lashColor',
     'eyeOutlineColor',
     'accessoryColor',
     'accentColor',
-  ])
+  ]) {
+    if (key === 'lashColor' && config[key] === undefined) continue;
     if (!color.test(config[key])) errors.push(`Invalid ${key}.`);
+  }
   if (
     !hasOnlyKeys(config.background, ['type', 'color']) ||
     !color.test(config.background?.color) ||

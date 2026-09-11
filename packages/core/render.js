@@ -1,4 +1,9 @@
-import { BODY_PATHS, SHAPE_FITS, closedEyeColor } from './render-model.js';
+import {
+  BODY_PATHS,
+  LASHED_EYES,
+  SHAPE_FITS,
+  closedEyeColor,
+} from './render-model.js';
 import { renderEffects } from './render-effects.js';
 
 export function renderParts(h, config, state = 'idle') {
@@ -81,6 +86,14 @@ export function renderParts(h, config, state = 'idle') {
     const capsule = type === 'capsules' || type === 'asymmetric';
     const wink = type === 'wink' && i === 1 && !startled;
     const pupilled = !dots && !pixel && !money && !capsule && !wink;
+    const hasLashes = LASHED_EYES.includes(type);
+    const configuredLashInk = config.lashColor || closedEyeInk;
+    const lashInk =
+      hasLashes &&
+      configuredLashInk.toLowerCase() !== config.color.toLowerCase()
+        ? configuredLashInk
+        : closedEyeInk;
+    const lashData = hasLashes ? { 'data-eye-lash': type } : {};
     const width = dots
       ? 7
       : pixel
@@ -118,10 +131,11 @@ export function renderParts(h, config, state = 'idle') {
           `M${x - width + 2} ${y - 2} Q${x} ${y + 8} ${x + width - 2} ${y - 2}`,
           {
             fill: 'none',
-            stroke: closedEyeInk,
+            stroke: lashInk,
             strokeWidth: 6,
             strokeLinecap: 'round',
             'data-eye-lid': 'sleeping',
+            ...lashData,
           },
         ),
       );
@@ -129,9 +143,10 @@ export function renderParts(h, config, state = 'idle') {
       eyeParts.push(
         path(`M${x - 17} ${y + 1} Q${x} ${y + 14} ${x + 17} ${y - 1}`, {
           fill: 'none',
-          stroke: closedEyeInk,
+          stroke: lashInk,
           strokeWidth: 6,
           strokeLinecap: 'round',
+          ...lashData,
         }),
       );
     } else if (happy) {
@@ -141,9 +156,10 @@ export function renderParts(h, config, state = 'idle') {
       eyeParts.push(
         path(d, {
           fill: 'none',
-          stroke: closedEyeInk,
+          stroke: lashInk,
           strokeWidth: dots ? 5 : 8,
           strokeLinecap: pixel ? 'square' : 'round',
+          ...lashData,
         }),
       );
     } else if (money) {
@@ -191,12 +207,12 @@ export function renderParts(h, config, state = 'idle') {
           type === 'side-eye'
             ? 10
             : thinking
-              ? 7
+              ? 10
               : config.shape === 'wobbi'
                 ? 7
                 : 2;
         const pupilX = x + gazeX;
-        const pupilY = y + (thinking ? -11 : type === 'round' ? -2 : -8);
+        const pupilY = y + (type === 'round' ? -2 : -8);
         const pupilWidth = type === 'glossy' ? 11 : startled ? 6 : 9;
         const pupilHeight =
           type === 'round' ? 10 : type === 'glossy' ? 14 : startled ? 8 : 11;
@@ -250,10 +266,11 @@ export function renderParts(h, config, state = 'idle') {
         eyeParts.push(
           path(lidPath, {
             fill: 'none',
-            stroke: closedEyeInk,
+            stroke: lashInk,
             strokeWidth: 4,
             strokeLinecap: 'round',
             'data-eye-lid': angry ? 'angry' : fearful ? 'fearful' : 'sleepy',
+            ...lashData,
           }),
         );
       }
@@ -615,8 +632,10 @@ export function renderParts(h, config, state = 'idle') {
   if (config.head === 'round-ears')
     [0, 1].forEach((i) => {
       const direction = i ? 1 : -1;
-      const earX = headX + direction * (crownHalf - 8);
-      const earY = headY + 2;
+      const earX = fit.roundEarX?.[i] ?? headX + direction * (crownHalf - 8);
+      const earY = Array.isArray(fit.roundEarY)
+        ? fit.roundEarY[i]
+        : (fit.roundEarY ?? headY + 2);
       head.push(
         group(
           `round-ear-${i}`,
@@ -636,9 +655,7 @@ export function renderParts(h, config, state = 'idle') {
       );
     });
   if (config.head === 'halo') {
-    const haloY =
-      headY -
-      (config.shape === 'drop' || config.shape === 'triangle' ? 62 : 35);
+    const haloY = headY - (config.shape === 'drop' ? 62 : 35);
     head.push(
       group(
         'halo',
@@ -663,9 +680,16 @@ export function renderParts(h, config, state = 'idle') {
     );
   }
   if (config.head === 'horns') {
-    const hornPath = `M${crownLeft + 5} ${headY + 25} Q${crownLeft - 16} ${headY - 3} ${crownLeft + 7} ${headY - 24} Q${crownLeft + 1} ${headY - 3} ${headX - crownInnerHalf} ${headY + 10}Z M${headX + crownInnerHalf} ${headY + 10} Q${crownRight - 1} ${headY - 3} ${crownRight - 7} ${headY - 24} Q${crownRight + 16} ${headY - 3} ${crownRight - 5} ${headY + 25}Z`;
+    const hornHalf = fit.hornHalf ?? crownHalf;
+    const hornLeft = fit.hornX?.[0] ?? headX - hornHalf;
+    const hornRight = fit.hornX?.[1] ?? headX + hornHalf;
+    const hornInnerHalf = Math.max(22, hornHalf * 0.38);
+    const hornPath = `M${hornLeft + 5} ${headY + 25} Q${hornLeft - 16} ${headY - 3} ${hornLeft + 7} ${headY - 24} Q${hornLeft + 1} ${headY - 3} ${headX - hornInnerHalf} ${headY + 10}Z M${headX + hornInnerHalf} ${headY + 10} Q${hornRight - 1} ${headY - 3} ${hornRight - 7} ${headY - 24} Q${hornRight + 16} ${headY - 3} ${hornRight - 5} ${headY + 25}Z`;
     head.push(
-      path(hornPath, { fill: config.accessoryColor }),
+      path(hornPath, {
+        fill: config.accessoryColor,
+        'data-head-style': 'horns',
+      }),
       depthLayer(hornPath, 'horns'),
     );
   }
@@ -688,6 +712,67 @@ export function renderParts(h, config, state = 'idle') {
             ),
       ),
     );
+  if (config.accessory === 'sunglasses') {
+    const lensInk =
+      config.accessoryColor.toLowerCase() === config.color.toLowerCase()
+        ? closedEyeInk
+        : config.accessoryColor;
+    const leftLens = `M70 ${ey - 19} L130 ${ey - 13} L126 ${ey + 2} Q119 ${ey + 26} 97 ${ey + 25} Q76 ${ey + 24} 73 ${ey + 4}Z`;
+    const rightLens = `M132 ${ey - 13} L192 ${ey - 19} L189 ${ey + 4} Q186 ${ey + 24} 165 ${ey + 25} Q143 ${ey + 26} 136 ${ey + 2}Z`;
+    accessoriesFront.push(
+      n(
+        'g',
+        {
+          'data-accessory-style': 'sunglasses',
+          strokeLinejoin: 'round',
+        },
+        path(leftLens, {
+          fill: lensInk,
+          stroke: lensInk,
+          strokeWidth: 4,
+          'data-accessory-piece': 'left-sunglass-lens',
+        }),
+        path(rightLens, {
+          fill: lensInk,
+          stroke: lensInk,
+          strokeWidth: 4,
+          'data-accessory-piece': 'right-sunglass-lens',
+        }),
+        path(`M126 ${ey - 5} Q131 ${ey - 10} 136 ${ey - 5}`, {
+          fill: 'none',
+          stroke: lensInk,
+          strokeWidth: 5,
+          strokeLinecap: 'round',
+        }),
+        fit.glassesArms === false
+          ? null
+          : path(
+              `M72 ${ey - 10} L${128 - fit.templeHalf} ${ey - 14} M190 ${ey - 10} L${128 + fit.templeHalf} ${ey - 14}`,
+              {
+                fill: 'none',
+                stroke: lensInk,
+                strokeWidth: 5,
+                strokeLinecap: 'round',
+                'data-accessory-piece': 'sunglasses-arms',
+              },
+            ),
+        path(`M82 ${ey - 10} L103 ${ey - 7}`, {
+          fill: 'none',
+          stroke: '#ffffff',
+          strokeWidth: 3,
+          strokeLinecap: 'round',
+          opacity: 0.42,
+        }),
+        path(`M144 ${ey - 7} L165 ${ey - 10}`, {
+          fill: 'none',
+          stroke: '#ffffff',
+          strokeWidth: 3,
+          strokeLinecap: 'round',
+          opacity: 0.42,
+        }),
+      ),
+    );
+  }
   if (config.accessory === 'headphones') {
     const cupTop = ey - 14;
     const cupHeight = 57;

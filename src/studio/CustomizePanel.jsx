@@ -11,6 +11,7 @@ import {
   headsForShape,
   mouthsForNose,
 } from '../../packages/core/config.js';
+import { LASHED_EYES } from '../../packages/core/render-model.js';
 import { ChoiceGrid } from './ChoiceGrid.jsx';
 import { ColorPicker, Swatches } from './ColorPicker.jsx';
 import { DisclosurePanel } from './Disclosure.jsx';
@@ -117,12 +118,14 @@ export function CustomizePanel({
     'side-eye',
     'wink',
   ].includes(config.eyes);
+  const hasLashes = LASHED_EYES.includes(config.eyes);
   const availableHeads = headsForShape(config.shape);
   const availableAccessories = accessoriesForShape(config.shape);
   const labels = {
     color: 'Corps',
     eyeColor: 'Yeux',
     pupilColor: 'Pupilles',
+    lashColor: 'Cils',
     mouthColor: 'Bouche',
     noseColor: 'Nez',
     browColor: 'Sourcils',
@@ -174,8 +177,8 @@ export function CustomizePanel({
         values={SHAPES}
         labels={shapeLabels}
         config={config}
-        columns={4}
-        collapsedCount={4}
+        columns={3}
+        collapsedCount={3}
         itemLabel="formes"
         onChange={(shape) =>
           patch({
@@ -274,6 +277,19 @@ export function CustomizePanel({
               label="Pupille"
               ariaLabel="Couleur des pupilles"
               value={config.pupilColor}
+              patch={patch}
+              preview={preview}
+              commitPreview={commitPreview}
+              target={target}
+              setTarget={setTarget}
+            />
+          )}
+          {hasLashes && (
+            <InlineColorControl
+              colorKey="lashColor"
+              label="Cils"
+              ariaLabel="Couleur des cils"
+              value={config.lashColor}
               patch={patch}
               preview={preview}
               commitPreview={commitPreview}

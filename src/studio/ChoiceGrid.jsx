@@ -33,9 +33,12 @@ export function ChoiceGrid({
   const selectedIsHidden = values.indexOf(config[field]) >= collapsedCount;
   const [expanded, setExpanded] = useState(() => selectedIsHidden);
   const canToggle = values.length > collapsedCount;
-  const showAll = expanded || selectedIsHidden;
-  const primaryValues = values.slice(0, collapsedCount);
-  const extraValues = values.slice(collapsedCount);
+  const showAll = expanded;
+  const defaultPrimaryValues = values.slice(0, collapsedCount);
+  const primaryValues = selectedIsHidden
+    ? [...defaultPrimaryValues.slice(0, -1), config[field]]
+    : defaultPrimaryValues;
+  const extraValues = values.filter((value) => !primaryValues.includes(value));
   const renderChoice = (value) => {
     const c = { ...config, [field]: value };
     const contextualPreview = ['eyes', 'mouth', 'nose', 'brows'].includes(kind);

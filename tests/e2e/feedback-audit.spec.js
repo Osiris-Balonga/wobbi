@@ -101,20 +101,112 @@ test('authors the shared sleep, thought and song reactions', async ({
   ).toHaveCount(0);
 });
 
-test('renders the oval as a taller, narrower mascot silhouette', async ({
+test('renders the egg as a taller, narrower mascot silhouette', async ({
   page,
 }) => {
   await page.goto('/');
   await page
     .getByRole('button', { name: 'Voir 4 formes de plus', exact: true })
     .click();
-  await page
-    .getByRole('button', { name: 'Forme : Ovale', exact: true })
-    .click();
+  await page.getByRole('button', { name: 'Forme : Œuf', exact: true }).click();
   const bounds = await page
     .locator('.mascot-hit [data-shape="oval"]')
     .boundingBox();
   expect(bounds.height).toBeGreaterThan(bounds.width * 1.2);
+});
+
+test('keeps the shape grid compact and collapses an extra selection', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const shapeGrid = page.locator('.customizer > .choice-section').first();
+  const tracks = await shapeGrid
+    .locator(':scope > .choice-grid')
+    .evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(' '));
+  expect(tracks).toHaveLength(3);
+  await expect(
+    page.getByRole('button', { name: 'Forme : Triangle', exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByRole('button', { name: 'Voir 4 formes de plus', exact: true })
+    .click();
+  await expect(
+    page.getByRole('button', { name: 'Forme : Œuf', exact: true }),
+  ).toBeVisible();
+
+  await page
+    .getByRole('button', { name: 'Voir 3 nez de plus', exact: true })
+    .click();
+  await page
+    .getByRole('button', {
+      name: 'Nez, museau ou bec : Museau',
+      exact: true,
+    })
+    .click();
+  const reduceNoses = page.getByRole('button', {
+    name: 'Réduire nez, museau ou bec',
+    exact: true,
+  });
+  await reduceNoses.click();
+  await expect(
+    page.getByRole('button', { name: 'Voir 3 nez de plus', exact: true }),
+  ).toHaveAttribute('aria-expanded', 'false');
+  await expect(
+    page.getByRole('button', {
+      name: 'Nez, museau ou bec : Museau',
+      exact: true,
+    }),
+  ).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('renders fitted Wobbi details, sunglasses and sideways thinking eyes', async ({
+  page,
+}, testInfo) => {
+  await restore(page, {
+    color: '#aa5d2b',
+    depth: 'deep',
+    nose: 'muzzle',
+    head: 'round-ears',
+    accessory: 'sunglasses',
+  });
+  await expect(
+    mascot(page).locator('[data-accessory-style="sunglasses"]'),
+  ).toBeVisible();
+  const attached = await mascot(page).evaluate((svg) => {
+    const body = svg.querySelector('[data-shape]');
+    const leftEar = svg.querySelector('[data-part="round-ear-0"] ellipse');
+    const rightEar = svg.querySelector('[data-part="round-ear-1"] ellipse');
+    return [
+      body.isPointInFill(
+        new DOMPoint(
+          Number(leftEar.getAttribute('cx')) + 14,
+          Number(leftEar.getAttribute('cy')) + 7,
+        ),
+      ),
+      body.isPointInFill(
+        new DOMPoint(
+          Number(rightEar.getAttribute('cx')) - 14,
+          Number(rightEar.getAttribute('cy')) + 7,
+        ),
+      ),
+    ];
+  });
+  expect(attached).toEqual([true, true]);
+  await page
+    .locator('.mascot-stage')
+    .screenshot({ path: testInfo.outputPath('wobbi-sunglasses.png') });
+
+  await page.getByRole('button', { name: 'Réaction : Réflexion' }).click();
+  const pupilOffsets = await mascot(page).evaluate((svg) =>
+    [...svg.querySelectorAll('[data-eye-wrap]')].map((eye) => {
+      const white = eye.querySelector('[data-part="eye-white"]');
+      const pupil = eye.querySelector('[data-part="pupil"] ellipse');
+      return (
+        Number(pupil.getAttribute('cy')) - Number(white.getAttribute('cy'))
+      );
+    }),
+  );
+  expect(pupilOffsets).toEqual([-8, -8]);
 });
 
 test('fits oval face accessories and excludes square ears', async ({

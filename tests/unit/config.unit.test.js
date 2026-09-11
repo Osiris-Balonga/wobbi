@@ -28,6 +28,7 @@ describe('mascot domain', () => {
       componentName: 'Wobbi',
       shape: 'wobbi',
       mouthColor: '#111218',
+      lashColor: '#111218',
       depth: 'soft',
       size: 256,
       defaultState: 'idle',
@@ -55,6 +56,10 @@ describe('mascot domain', () => {
       }).length,
     ).toBeGreaterThanOrEqual(3);
     expect(validateConfig(createConfig())).toEqual([]);
+    const previousProject = createConfig();
+    delete previousProject.lashColor;
+    expect(validateConfig(previousProject)).toEqual([]);
+    expect(createConfig(previousProject).lashColor).toBe('#111218');
     expect(
       validateConfig({
         ...createConfig(),
@@ -86,6 +91,7 @@ describe('mascot domain', () => {
     expect(SHAPES).not.toContain('bean');
     expect(SHAPES).not.toContain('blob');
     expect(SHAPES).not.toContain('flame');
+    expect(SHAPES).not.toContain('triangle');
     expect(SHAPES).toContain('oval');
     expect(headsForShape('drop')).not.toContain('ears');
     expect(headsForShape('oval')).toEqual(
@@ -106,34 +112,15 @@ describe('mascot domain', () => {
       'horns',
       'halo',
     ]);
-    expect(headsForShape('triangle')).toEqual(['none', 'halo']);
-    expect(accessoriesForShape('triangle')).not.toContain('hat');
     expect(accessoriesForShape('cloud')).not.toContain('hat');
+    expect(ACCESSORIES).toContain('sunglasses');
     expect(ACCESSORIES).not.toEqual(expect.arrayContaining(['hat', 'cap']));
-    expect(
-      validateConfig(
-        createConfig({ shape: 'triangle', head: 'ears', accessory: 'hat' }),
-      ),
-    ).toEqual([
-      'Invalid accessory.',
-      'Choose a head detail compatible with the shape.',
-      'Choose an accessory compatible with the shape.',
-    ]);
+    expect(validateConfig(createConfig({ shape: 'triangle' }))).toContain(
+      'Choose a supported shape.',
+    );
     expect(validateConfig(createConfig({ shape: 'flame' }))).toContain(
       'Choose a supported shape.',
     );
-    expect(
-      validateConfig({
-        ...createConfig({ shape: 'circle' }),
-        shape: 'triangle',
-        head: 'ears',
-        accessory: 'hat',
-      }),
-    ).toEqual([
-      'Invalid accessory.',
-      'Choose a head detail compatible with the shape.',
-      'Choose an accessory compatible with the shape.',
-    ]);
   });
   it('offers a broader but validated expression system', () => {
     expect(EYES).toHaveLength(12);
