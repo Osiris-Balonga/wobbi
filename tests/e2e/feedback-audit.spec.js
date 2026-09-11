@@ -331,3 +331,40 @@ test('animates disclosure in both directions and keeps hidden controls inert', a
   await expect(panel).toHaveCSS('grid-template-rows', '0px');
   await expect(panel).toHaveAttribute('inert', '');
 });
+
+test('keeps the studio focused and balanced on extra-large displays', async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 2560, height: 1440 },
+    { width: 3840, height: 2160 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await page.evaluate(() => document.fonts.ready);
+
+    const metrics = await page.evaluate(() => {
+      const workspace = document.querySelector('.creation-workspace');
+      const logo = document.querySelector('.brand-image');
+      const mascot = document.querySelector('.mascot-hit .wobbi-mascot');
+      const reactionTile = document.querySelector('.reaction-tile');
+      const workspaceRect = workspace.getBoundingClientRect();
+
+      return {
+        documentWidth: document.documentElement.scrollWidth,
+        workspaceLeft: workspaceRect.left,
+        workspaceWidth: workspaceRect.width,
+        logoLeft: logo.getBoundingClientRect().left,
+        mascotWidth: mascot.getBoundingClientRect().width,
+        reactionWidth: reactionTile.getBoundingClientRect().width,
+      };
+    });
+
+    expect(metrics.documentWidth).toBe(viewport.width);
+    expect(metrics.workspaceWidth).toBeLessThanOrEqual(2200);
+    expect(metrics.logoLeft - metrics.workspaceLeft).toBeCloseTo(28, 0);
+    expect(metrics.mascotWidth).toBeGreaterThanOrEqual(410);
+    expect(metrics.mascotWidth).toBeLessThanOrEqual(520);
+    expect(metrics.reactionWidth).toBeLessThanOrEqual(205);
+  }
+});

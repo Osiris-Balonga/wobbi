@@ -177,3 +177,30 @@ p {
   margin-left: 16px;
   padding: 13px 22px;
 }
+.github-cta {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #fff;
+  background: #242032;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 850;
+  white-space: nowrap;
+  box-shadow: 0 2px 3px #2420321f;
+  transition:
+    background-color 160ms,
+    box-shadow 160ms,
+    scale 130ms;
+}
+.github-cta:hover {
+  background: #111218;
+  box-shadow: 0 4px 10px #24203224;
+}
+.github-cta:active {
+  scale: 0.96;
+}
