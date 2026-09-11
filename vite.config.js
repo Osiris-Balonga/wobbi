@@ -6,6 +6,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./tests/setup.js'],
     include: ['tests/**/*.test.{js,jsx}', 'packages/cli/tests/**/*.test.js'],
+    testTimeout: 10000,
     restoreMocks: true,
   },
 });

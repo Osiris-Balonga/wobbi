@@ -1,115 +1,322 @@
 import { it, expect } from 'vitest';
-import { render, screen, within, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { act, render, screen, fireEvent, within } from '@testing-library/react';
 import App from '../../src/App.jsx';
-const mainMascot = () =>
-  within(screen.getByTestId('main-preview')).getByRole('img');
-it('customizes preset, shape, eyes, colors, outline, background and size live', async () => {
-  const user = userEvent.setup();
-  render(<App />);
-  await user.click(screen.getByRole('button', { name: 'Preset Blinky' }));
-  expect(mainMascot().querySelector('[data-part="body"]')).toHaveAttribute(
-    'fill',
-    '#f03f52',
-  );
-  await user.click(screen.getByRole('button', { name: 'Shape Circle' }));
-  await user.click(screen.getByRole('button', { name: 'Eyes Dots' }));
-  expect(mainMascot().querySelector('[data-part="body"]')).toHaveAttribute(
+it('opens with the unchanged full logo and its live brand mascot', () => {
+  const { container } = render(<App />);
+  expect(
+    screen.getByRole('img', { name: 'Wobbi', exact: true }),
+  ).toHaveAttribute('src', '/brand/wobbi-wordmark.png');
+  expect(container.querySelector('.mascot-hit [data-shape]')).toHaveAttribute(
     'data-shape',
-    'circle',
+    'wobbi',
   );
-  expect(mainMascot().querySelector('[data-part="eyes"]')).toHaveAttribute(
+  expect(
+    screen.getByRole('button', { name: 'Mettre en pause' }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('tab', { name: 'Settings' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Yeux : Grands yeux' }),
+  ).toHaveStyle({ '--choice-surface': '#111218', '--choice-ink': '#ffffff' });
+  expect(screen.getByRole('button', { name: 'Bouche : Sourire' })).toHaveStyle({
+    '--choice-surface': '#111218',
+    '--choice-ink': '#ffffff',
+  });
+  expect(
+    within(
+      screen.getByRole('group', { name: 'Couleur du corps' }),
+    ).getAllByRole('button'),
+  ).toHaveLength(6);
+  const studioActions = screen.getByRole('navigation', {
+    name: 'Actions du studio',
+  });
+  expect(
+    within(studioActions).getByRole('button', { name: 'Importer un projet' }),
+  ).toBeInTheDocument();
+  expect(
+    within(studioActions).getByRole('button', { name: 'Repartir de Wobbi' }),
+  ).toBeInTheDocument();
+  expect(screen.queryByText('Un petit personnage. Tout vous.')).toBeNull();
+  expect(screen.queryByText('Ouvrir un projet')).toBeNull();
+});
+it('previews white feature colours against the selected body colour', () => {
+  render(<App />);
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Couleur du corps #ffcc45',
+      exact: true,
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Couleur de la bouche #ffffff',
+      exact: true,
+    }),
+  );
+  const mouthChoice = screen.getByRole('button', {
+    name: 'Bouche : Sourire',
+    exact: true,
+  });
+  expect(mouthChoice).toHaveStyle({
+    '--choice-surface': '#ffcc45',
+    '--choice-ink': '#111218',
+  });
+  expect(mouthChoice.querySelector('[data-part="mouth"] path')).toHaveAttribute(
+    'stroke',
+    '#ffffff',
+  );
+});
+it('customizes illustrated parts and reverses an accessory edit', () => {
+  const { container } = render(<App />);
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Forme : Rond', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Voir 9 regards de plus', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Yeux : Points', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Couleur des yeux #9270ff',
+      exact: true,
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Bouche : Sourire', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Couleur de la bouche #61a9ff',
+      exact: true,
+    }),
+  );
+  expect(container.querySelector('.mascot-hit [data-eyes]')).toHaveAttribute(
     'data-eyes',
     'dots',
   );
-  fireEvent.change(screen.getByLabelText('Body color'), {
+  expect(
+    container.querySelector('.mascot-hit [data-part="eyes"] ellipse'),
+  ).toHaveAttribute('fill', '#9270ff');
+  expect(
+    container.querySelector('.mascot-hit [data-part="mouth"]'),
+  ).toBeTruthy();
+  expect(
+    container.querySelector('.mascot-hit [data-part="mouth"] path'),
+  ).toHaveAttribute('stroke', '#61a9ff');
+  const details = screen.getByRole('button', { name: /Accessoires & détails/ });
+  fireEvent.click(details);
+  expect(details).toHaveAttribute('aria-expanded', 'true');
+  expect(
+    screen.getByRole('heading', { name: /À vous de jouer/ }),
+  ).toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: /Voir \d+ détails de tête de plus/,
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Tête : Oreilles de chat',
+      exact: true,
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Accessoires : Lunettes', exact: true }),
+  );
+  expect(
+    container.querySelector('.mascot-hit [data-part="ear-0"]'),
+  ).toBeTruthy();
+  expect(
+    container.querySelector('.mascot-hit [data-part="accessory"]').children
+      .length,
+  ).toBeGreaterThan(0);
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Annuler la modification' }),
+  );
+  expect(
+    container.querySelector('.mascot-hit [data-part="accessory"]').children
+      .length,
+  ).toBe(0);
+});
+it('expands and reduces the compact shape, eye and mouth grids', () => {
+  render(<App />);
+  expect(
+    screen.queryByRole('button', { name: 'Forme : Goutte', exact: true }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Voir 4 formes de plus', exact: true }),
+  );
+  expect(
+    screen.getByRole('button', { name: 'Forme : Goutte', exact: true }),
+  ).toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Réduire forme', exact: true }),
+  );
+
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Voir 9 regards de plus', exact: true }),
+  );
+  expect(
+    screen.getByRole('button', { name: 'Yeux : Pixels', exact: true }),
+  ).toBeInTheDocument();
+  const eyelidChoice = screen.getByRole('button', {
+    name: 'Yeux : Paupières',
+    exact: true,
+  });
+  expect(
+    within(eyelidChoice).getByRole('img', { hidden: true }),
+  ).toHaveAttribute('data-state', 'idle');
+  expect(eyelidChoice.querySelector('[data-eyes]')).toHaveAttribute(
+    'data-eyes',
+    'sleepy',
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Réduire yeux', exact: true }),
+  );
+
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Voir 5 bouches de plus', exact: true }),
+  );
+  expect(
+    screen.getByRole('button', { name: 'Bouche : Deux dents', exact: true }),
+  ).toBeInTheDocument();
+});
+it('shows and applies both eye tones only for eye families that use pupils', () => {
+  const { container } = render(<App />);
+  expect(
+    screen.getByRole('group', { name: 'Couleur de l’œil' }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('group', { name: 'Couleur des pupilles' }),
+  ).toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Couleur des pupilles #9270ff',
+      exact: true,
+    }),
+  );
+  expect(
+    container.querySelector('.mascot-hit [data-part="pupil"] ellipse'),
+  ).toHaveAttribute('fill', '#9270ff');
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Voir 9 regards de plus', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Yeux : Points', exact: true }),
+  );
+  expect(
+    screen.getByRole('group', { name: 'Couleur des yeux' }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('group', { name: 'Couleur des pupilles' }),
+  ).not.toBeInTheDocument();
+});
+it('keeps mouth choices visible but disabled when a beak is selected', () => {
+  render(<App />);
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Voir 3 nez de plus', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Nez, museau ou bec : Bec',
+      exact: true,
+    }),
+  );
+  expect(
+    screen.getByRole('button', { name: 'Bouche : Sans', exact: true }),
+  ).toBeEnabled();
+  expect(
+    screen.getByRole('button', { name: 'Bouche : Sourire', exact: true }),
+  ).toBeDisabled();
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Voir 5 bouches de plus', exact: true }),
+  );
+  expect(
+    screen.getByRole('button', { name: 'Bouche : Crocs', exact: true }),
+  ).toBeDisabled();
+});
+it('only offers details compatible with the selected silhouette', () => {
+  render(<App />);
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Forme : Rond', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: /Accessoires & détails/ }),
+  );
+  expect(screen.queryByText('Petites mains')).not.toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: /Voir \d+ détails de tête de plus/,
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Tête : Oreilles de chat',
+      exact: true,
+    }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Accessoires : Casque', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Voir 4 formes de plus', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Forme : Triangle', exact: true }),
+  );
+  expect(
+    screen.queryByRole('button', {
+      name: 'Tête : Oreilles de chat',
+      exact: true,
+    }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', {
+      name: 'Accessoires : Casque',
+      exact: true,
+    }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Tête : Sans', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  expect(
+    screen.getByRole('button', { name: 'Accessoires : Sans', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+});
+it('accepts an exact colour and opens an export choice without downloading', async () => {
+  const { container } = render(<App />);
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Couleur du corps personnalisée',
+      exact: true,
+    }),
+  );
+  fireEvent.change(screen.getByLabelText('HEX'), {
     target: { value: '#336699' },
   });
-  fireEvent.change(screen.getByLabelText('Size'), { target: { value: '192' } });
-  fireEvent.change(screen.getByLabelText('Outline width'), {
-    target: { value: '12' },
-  });
-  await user.click(screen.getByRole('button', { name: 'Transparent' }));
-  expect(mainMascot()).toHaveAttribute('width', '192');
-  expect(mainMascot().querySelector('[data-part="body"]')).toHaveAttribute(
+  expect(container.querySelector('.mascot-hit [data-shape]')).toHaveAttribute(
     'fill',
     '#336699',
   );
-  expect(mainMascot().querySelector('[data-part="body"]')).toHaveAttribute(
-    'stroke-width',
-    '12',
-  );
-  expect(screen.getByTestId('mascot-stage')).toHaveAttribute(
-    'data-background',
-    'transparent',
-  );
-});
-it('selects reactions and shows eight views of the same edited mascot', async () => {
-  const user = userEvent.setup();
-  render(<App />);
-  await user.click(screen.getByRole('button', { name: 'Reaction Happy' }));
-  expect(mainMascot()).toHaveAttribute('data-state', 'happy');
-  await user.click(screen.getByRole('tab', { name: 'Grid', exact: true }));
-  expect(
-    within(screen.getByTestId('reaction-grid')).getAllByRole('img'),
-  ).toHaveLength(8);
-  await user.click(screen.getByRole('tab', { name: 'Preview', exact: true }));
-  expect(mainMascot()).toHaveAttribute('data-state', 'happy');
-});
-it('configures ordered motion and controls playback', async () => {
-  const user = userEvent.setup();
-  render(<App />);
-  await user.click(screen.getByRole('tab', { name: 'Motion', exact: true }));
-  await user.selectOptions(screen.getByLabelText('Reaction to edit'), 'happy');
-  expect(mainMascot()).toHaveAttribute('data-state', 'happy');
-  fireEvent.change(screen.getByLabelText('Duration'), {
-    target: { value: '1200' },
+  fireEvent.click(screen.getByRole('button', { name: 'Terminé' }));
+  await act(async () => {
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Exporter', exact: true }),
+    );
+    await import('../../src/export/ExportDialog.jsx');
   });
-  fireEvent.change(screen.getByLabelText('Intensity'), {
-    target: { value: '80' },
-  });
-  await user.click(screen.getByRole('button', { name: 'Once', exact: true }));
-  await user.click(screen.getByRole('switch', { name: 'Bounce' }));
-  expect(screen.getByRole('switch', { name: 'Bounce' })).toHaveAttribute(
-    'aria-checked',
-    'false',
-  );
-  await user.click(screen.getByRole('button', { name: 'Move Tilt up' }));
-  const rows = screen.getAllByTestId('movement-row');
-  expect(rows[1]).toHaveTextContent('Tilt');
-  await user.selectOptions(screen.getByLabelText('Movement to add'), 'shake');
-  await user.click(screen.getByRole('button', { name: 'Add movement' }));
-  expect(screen.getByRole('switch', { name: 'Shake' })).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Play', exact: true }));
-  expect(screen.getByRole('switch', { name: 'Auto play' })).toHaveAttribute(
-    'aria-checked',
-    'true',
-  );
-  await user.click(screen.getByRole('button', { name: 'Replay', exact: true }));
-  expect(screen.getByLabelText('Duration')).toHaveValue('1200');
-});
-it('shows real export files and copies command and individual usage snippets', async () => {
-  const user = userEvent.setup();
-  render(<App />);
-  await user.click(
-    screen.getByRole('button', { name: 'Copy command', exact: true }),
-  );
-  expect(await navigator.clipboard.readText()).toContain(
-    'node packages/cli/bin/wobbi.js add ghost-eye',
-  );
-  await user.click(screen.getByRole('tab', { name: 'Generated Files' }));
+  expect(await screen.findByRole('dialog')).toBeInTheDocument();
   expect(
-    screen.getByRole('button', { name: 'View GhostEye.jsx' }),
-  ).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'View GhostEye.jsx' }));
-  expect(screen.getByTestId('source-code')).toHaveTextContent(
-    'export function GhostEye',
-  );
-  await user.click(screen.getByRole('tab', { name: 'Usage', exact: true }));
-  await user.click(
-    screen.getByRole('button', { name: 'Copy Change reaction' }),
-  );
-  expect(await navigator.clipboard.readText()).toBe(
-    '<GhostEye state="thinking" />',
-  );
+    screen.getByRole('button', { name: /Site ou application/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  expect(
+    screen.getByRole('button', { name: /Télécharger les fichiers/ }),
+  ).toBeEnabled();
+  expect(container.querySelector('img[src="/brand/react.svg"]')).toBeTruthy();
+  expect(
+    container.querySelector('img[src="/brand/javascript.svg"]'),
+  ).toBeTruthy();
 });

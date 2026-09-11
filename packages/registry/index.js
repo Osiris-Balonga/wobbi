@@ -18,7 +18,7 @@ export const PRESETS = [
   {
     slug: 'dot',
     label: 'Dot',
-    shape: 'blob',
+    shape: 'oval',
     color: '#4999ef',
     outlineWidth: 0,
     background: { color: '#dbeeff' },

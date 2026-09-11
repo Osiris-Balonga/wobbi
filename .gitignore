@@ -6,3 +6,6 @@ coverage/
 .env*
 !.env.example
 tmp/
+output/
+ChatGPT Image*
+WhatsApp Image*

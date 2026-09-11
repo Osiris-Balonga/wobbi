@@ -1,257 +1,219 @@
-import { useState, useRef, useEffect } from 'react';
-import {
-  Pencil,
-  Play,
-  Settings2,
-  Sun,
-  Moon,
-  Download,
-  X,
-  ArrowUpRight,
-} from 'lucide-react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { FolderOpen, Redo2, RotateCcw, Undo2, Upload } from 'lucide-react';
 import { useStudio } from './studio/useStudio.js';
-import { DesignPanel } from './studio/DesignPanel.jsx';
-import { MotionPanel } from './studio/MotionPanel.jsx';
-import { SettingsPanel, SettingsNav } from './studio/SettingsPanel.jsx';
-import { Preview } from './studio/Preview.jsx';
-import { ExportPanel } from './export/ExportPanel.jsx';
-import { downloadSources } from './export/download.js';
-import { Tabs } from './ui/Controls.jsx';
-import './styles.css';
+import { CustomizePanel } from './studio/CustomizePanel.jsx';
+import { Stage } from './studio/Stage.jsx';
+import {
+  createConfig,
+  PROJECT_VERSION,
+  validateConfig,
+} from '../packages/core/config.js';
+import { reactionDuration } from '../packages/core/motion.js';
+import './studio.css';
+
+const loadExportDialog = () => import('./export/ExportDialog.jsx');
+const ExportDialog = lazy(() =>
+  loadExportDialog().then((module) => ({ default: module.ExportDialog })),
+);
+
 export default function App() {
-  const { config, setConfig, patch, theme, setTheme, storageError } =
-    useStudio();
-  const [mode, setMode] = useState('design');
-  const [reaction, setReaction] = useState(config.defaultState);
-  const [view, setView] = useState('preview');
-  const [playing, setPlaying] = useState(false);
-  const [replay, setReplay] = useState(0);
-  const [zoom, setZoom] = useState(100);
-  const [exportTab, setExportTab] = useState('install');
+  const studio = useStudio();
+  const [details, setDetails] = useState(false),
+    [exporting, setExporting] = useState(false);
+  const [reaction, setReaction] = useState('idle'),
+    [playing, setPlaying] = useState(true),
+    [replay, setReplay] = useState(0);
   const [notice, setNotice] = useState('');
-  const [mobilePanel, setMobilePanel] = useState('canvas');
-  const docsRef = useRef(null);
-  const noticeTimer = useRef(null);
-  useEffect(() => () => clearTimeout(noticeTimer.current), []);
-  function notify(message) {
-    setNotice(message);
-    clearTimeout(noticeTimer.current);
-    noticeTimer.current = setTimeout(() => setNotice(''), 4000);
+  const timers = useRef([]),
+    noticeTimer = useRef(null),
+    importRef = useRef(null);
+  const later = (fn, ms) => {
+    timers.current.push(setTimeout(fn, ms));
+  };
+  function clearSequence() {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
   }
-  function changeMode(value) {
-    setMode(value);
-    if (value === 'motion') setView('preview');
+  function reactTo(state) {
+    clearSequence();
+    setReaction(state);
+    setPlaying(true);
+    setReplay((n) => n + 1);
+    if (state !== 'idle')
+      later(() => setReaction('idle'), reactionDuration(state));
+  }
+  function notify(text) {
+    clearTimeout(noticeTimer.current);
+    setNotice(text);
+    noticeTimer.current = setTimeout(() => setNotice(''), 5000);
+  }
+  useEffect(
+    () => () => {
+      timers.current.forEach(clearTimeout);
+      clearTimeout(noticeTimer.current);
+    },
+    [],
+  );
+  function patch(changes) {
+    clearSequence();
+    setReaction('idle');
+    studio.patch(changes);
+  }
+  async function importProject(e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      if (file.size > 1000000)
+        throw new Error('Ce fichier est trop volumineux.');
+      const input = JSON.parse(await file.text());
+      if (
+        !input ||
+        typeof input !== 'object' ||
+        Array.isArray(input) ||
+        input.version !== PROJECT_VERSION
+      )
+        throw new Error('Choisissez un projet Wobbi valide.');
+      if (validateConfig(input).length)
+        throw new Error('Ce projet contient des valeurs invalides.');
+      const config = createConfig(input);
+      clearSequence();
+      setReaction('idle');
+      studio.setConfig(config);
+      notify('Votre création est prête.');
+    } catch (err) {
+      notify(
+        err instanceof SyntaxError
+          ? 'Ce fichier n’est pas un projet JSON valide.'
+          : err.message,
+      );
+    }
   }
   return (
-    <div
-      className="studio"
-      data-testid="studio"
-      data-theme={theme}
-      data-mobile-panel={mobilePanel}
-    >
-      <header className="navbar">
+    <div className="wobbi-app" data-testid="studio">
+      <header className="app-header">
         <a
-          className="brand"
           href="#"
-          aria-label="Wobbi home"
+          className="brand-image"
+          aria-label="Wobbi — accueil"
           onClick={(e) => {
             e.preventDefault();
-            changeMode('design');
-            setMobilePanel('canvas');
+            setDetails(false);
           }}
         >
-          <img src="/brand/wobbi-symbol.png" width="38" height="38" alt="" />
-          <span>
-            Wobbi<span className="brand-dot">.</span>
-          </span>
+          <img
+            src="/brand/wobbi-wordmark.png"
+            alt="Wobbi"
+            width="188"
+            height="70"
+          />
         </a>
-        <span className="beta">BETA</span>
-        <span className="navbar-tagline">
-          Tiny characters. <span>Big personality.</span> Ship them anywhere.
-        </span>
-        <nav aria-label="Global navigation">
+        <nav aria-label="Actions du studio">
           <button
-            className="nav-link"
-            onClick={() => docsRef.current.showModal()}
-          >
-            Docs
-            <ArrowUpRight size={12} />
-          </button>
-          <button
-            className="nav-link"
+            className="icon-button"
+            aria-label="Annuler la modification"
+            disabled={!studio.canUndo}
             onClick={() => {
-              changeMode('design');
-              setView('grid');
-              setMobilePanel('canvas');
+              clearSequence();
+              studio.undo();
             }}
           >
-            Examples
+            <Undo2 size={20} />
           </button>
-          <span className="nav-divider" />
-          <div className="theme-toggle" role="group" aria-label="Global theme">
-            <button
-              aria-label="Light theme"
-              aria-pressed={theme === 'light'}
-              onClick={() => setTheme('light')}
-            >
-              <Sun size={17} />
-            </button>
-            <button
-              aria-label="Dark theme"
-              aria-pressed={theme === 'dark'}
-              onClick={() => setTheme('dark')}
-            >
-              <Moon size={16} />
-            </button>
-          </div>
           <button
-            className="primary export-action"
-            aria-label="Export mascot"
+            className="icon-button"
+            aria-label="Rétablir la modification"
+            disabled={!studio.canRedo}
             onClick={() => {
-              downloadSources(config);
-              notify('Sources downloaded');
+              clearSequence();
+              studio.redo();
             }}
           >
-            <Download size={16} />
-            Export
+            <Redo2 size={20} />
+          </button>
+          <button
+            className="icon-button"
+            aria-label="Importer un projet"
+            title="Importer un projet"
+            onClick={() => importRef.current?.click()}
+          >
+            <FolderOpen size={20} />
+          </button>
+          <button
+            className="icon-button"
+            aria-label="Repartir de Wobbi"
+            title="Repartir de Wobbi"
+            onClick={() => {
+              clearSequence();
+              setReaction('idle');
+              studio.setConfig(createConfig());
+              setDetails(false);
+              notify('Voici Wobbi, comme dans le logo.');
+            }}
+          >
+            <RotateCcw size={20} />
+          </button>
+          <button
+            className="primary export-button"
+            aria-label="Exporter"
+            onFocus={loadExportDialog}
+            onPointerEnter={loadExportDialog}
+            onClick={() => setExporting(true)}
+          >
+            <Upload size={18} /> <span>Exporter</span>
           </button>
         </nav>
       </header>
-      <nav className="mobile-nav" aria-label="Workspace panels">
-        {['design', 'canvas', 'export'].map((panel) => (
-          <button
-            key={panel}
-            aria-pressed={mobilePanel === panel}
-            onClick={() => setMobilePanel(panel)}
-          >
-            {panel === 'design'
-              ? 'Customize'
-              : panel === 'canvas'
-                ? 'Preview'
-                : 'Export'}
-          </button>
-        ))}
-      </nav>
-      <div className="workspace">
-        <aside className="customization-panel" aria-label="Customization panel">
-          <Tabs
-            label="Studio mode"
-            value={mode}
-            onChange={changeMode}
-            panelId="customization-content"
-            className="mode-tabs"
-            items={[
-              { value: 'design', label: 'Design', icon: Pencil },
-              { value: 'motion', label: 'Motion', icon: Play },
-              { value: 'settings', label: 'Settings', icon: Settings2 },
-            ]}
-          />
-          <div id="customization-content" role="tabpanel" aria-label={mode}>
-            {mode === 'design' ? (
-              <DesignPanel
-                config={config}
-                patch={patch}
-                onPreset={(next) => {
-                  setConfig(next);
-                  setReaction(next.defaultState);
-                }}
-              />
-            ) : mode === 'motion' ? (
-              <MotionPanel
-                config={config}
-                reaction={reaction}
-                onReaction={setReaction}
-                patch={patch}
-              />
-            ) : (
-              <SettingsNav config={config} />
-            )}
-          </div>
-        </aside>
-        <main>
-          {mode === 'settings' ? (
-            <SettingsPanel
-              config={config}
-              setConfig={(next) => {
-                setConfig(next);
-                setReaction(next.defaultState);
-              }}
-              notify={notify}
-            />
-          ) : (
-            <Preview
-              config={config}
-              reaction={reaction}
-              onReaction={setReaction}
-              view={view}
-              setView={setView}
-              mode={mode}
-              playing={playing}
-              setPlaying={setPlaying}
-              replay={replay}
-              setReplay={setReplay}
-              zoom={zoom}
-              setZoom={setZoom}
-              onRename={() => changeMode('settings')}
-            />
-          )}
-        </main>
-        <ExportPanel
-          config={config}
+      <div className="creation-workspace">
+        <CustomizePanel
+          config={studio.config}
           patch={patch}
-          notify={notify}
-          tab={exportTab}
-          setTab={setExportTab}
+          preview={studio.preview}
+          commitPreview={studio.commitPreview}
+          details={details}
+          setDetails={setDetails}
+        />
+        <Stage
+          config={studio.config}
+          reaction={reaction}
+          reactTo={reactTo}
+          playing={playing}
+          setPlaying={setPlaying}
+          replay={replay}
         />
       </div>
-      <div
-        className={`toast ${notice || storageError ? 'visible' : ''}`}
-        role="status"
-        aria-live="polite"
+      <input
+        className="sr-only"
+        hidden
+        type="file"
+        ref={importRef}
+        accept=".json,application/json"
+        aria-label="Importer un projet Wobbi"
+        onChange={importProject}
+      />
+      <Suspense
+        fallback={
+          <div className="notification visible" role="status">
+            Préparation de l’export…
+          </div>
+        }
       >
-        {notice || storageError}
+        {exporting && (
+          <ExportDialog
+            config={studio.config}
+            onClose={() => setExporting(false)}
+            notify={notify}
+          />
+        )}
+      </Suspense>
+      <div
+        className={
+          'notification ' + (notice || studio.storageError ? 'visible' : '')
+        }
+        role="status"
+      >
+        {notice || studio.storageError}
       </div>
-      <dialog ref={docsRef} className="docs-dialog">
-        <div className="dialog-heading">
-          <h2>A little guide to Wobbi</h2>
-          <button
-            className="icon-button"
-            aria-label="Close documentation"
-            onClick={() => docsRef.current.close()}
-          >
-            <X size={20} />
-          </button>
-        </div>
-        <p>Pick a preset, make it yours, then give it a reaction.</p>
-        <ol>
-          <li>
-            <strong>Design.</strong> Change the shape, eyes, mouth and colors.
-            Every edit appears in the preview.
-          </li>
-          <li>
-            <strong>Motion.</strong> Pick one of eight reactions. Toggle and
-            reorder movements, then press Play.
-          </li>
-          <li>
-            <strong>Settings.</strong> Name your component, choose its defaults
-            and save.
-          </li>
-          <li>
-            <strong>Export.</strong> Download a ZIP of your current mascot and
-            copy the four files into your React app. Import the component from
-            its index file.
-          </li>
-        </ol>
-        <p>
-          The local CLI installs the six original presets. For your own edits,
-          download the source ZIP or configuration JSON. No remote registry is
-          connected in V1.
-        </p>
-        <p>Everything saves on this device. You own the generated source.</p>
-        <button className="primary" onClick={() => docsRef.current.close()}>
-          Let’s make a buddy
-        </button>
-      </dialog>
     </div>
   );
 }

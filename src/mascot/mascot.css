@@ -3,13 +3,15 @@
   overflow: visible;
   flex: none;
 }
-.wobbi-mascot [data-motion] {
+.wobbi-mascot [data-eye] {
   transform-box: fill-box;
   transform-origin: center;
 }
+.wobbi-mascot [data-part='body'] {
+  transition: opacity 160ms;
+}
 @media (prefers-reduced-motion: reduce) {
-  .wobbi-mascot[data-respect-motion='true'] [data-motion] {
-    animation: none !important;
-    transform: none !important;
+  .wobbi-mascot * {
+    transition: none !important;
   }
 }

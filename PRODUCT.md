@@ -10,27 +10,20 @@ web
 
 ## Users
 
-Developers composing a small interactive companion at a desktop workstation, then bringing editable sources into their application.
+Toute personne souhaitant créer un petit personnage en quelques choix visuels, puis l’utiliser comme image, animation ou compagnon interactif dans une application.
 
 ## Product Purpose
 
-Design one mascot, configure eight reactions and own the generated React code. Local creation, without accounts or a backend.
+Choisir une forme, un visage et éventuellement un accessoire. Les comportements sont prêts à utiliser. Exporter selon l’usage souhaité, sans apprendre un éditeur d’animation.
 
 ## Brand Personality
 
-Playful, precise, approachable. Wobble + Buddy. The supplied five studio screenshots are the visual authority.
-
-## Anti-references
-
-Not a design system, component library, dashboard, freeform drawing tool or professional animation timeline.
+Simple, ludique, expressif. Logo horizontal existant conservé, illustration du logo comme mascotte initiale. Personnages constitués d’une tête ; membres et accessoires facultatifs.
 
 ## Design Principles
 
-- Keep the mascot visible and immediately reflect edits.
-- Make generated files real and understandable.
-- Preserve identity between reactions.
-- Use a quiet tool shell to give the character room.
+La mascotte est présente et vivante dès l’arrivée. Les réglages techniques ne structurent pas l’écran principal. Toutes les bouches et familles d’yeux sont illustrées. Chaque famille de regards conserve une expression adaptée, y compris en chargement. Les réactions spéciales dépendent des formes et éléments de tête.
 
-## Accessibility & Inclusion
+## Accessibility
 
-Keyboard operation, visible focus, labelled controls, reduced motion, pause controls and light/dark themes. Desktop priority with usable narrow layouts.
+Clavier, focus visible, libellés français, contraste de l’interface, pause et réduction des animations, mise en page mobile. Le choix des couleurs de la mascotte reste libre.

@@ -4,6 +4,12 @@ import { afterEach, beforeEach, vi } from 'vitest';
 afterEach(cleanup);
 beforeEach(() => {
   if (typeof window === 'undefined') return;
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute('open', '');
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute('open');
+  };
   localStorage.clear();
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
