@@ -7,20 +7,35 @@ import {
   REACTIONS,
   normalizeMotion,
   animationPlan,
+  ACCESSORIES,
+  accessoriesForShape,
+  DEPTHS,
+  EYES,
+  NOSES,
+  BROWS,
+  headsForShape,
+  mouthsForNose,
+  MOUTHS,
+  SHAPES,
 } from '../../packages/core/config.js';
 describe('mascot domain', () => {
   it('creates independent complete defaults', () => {
     const a = createConfig();
     const b = createConfig();
     expect(a).toMatchObject({
-      slug: 'ghost-eye',
-      name: 'GhostEye',
-      componentName: 'GhostEye',
-      shape: 'ghost',
+      slug: 'wobbi',
+      name: 'Wobbi',
+      componentName: 'Wobbi',
+      shape: 'wobbi',
+      mouthColor: '#111218',
+      lashColor: '#111218',
+      depth: 'soft',
       size: 256,
       defaultState: 'idle',
     });
     expect(a.accessibility.respectReducedMotion).toBe(true);
+    expect(a).not.toHaveProperty('hands');
+    expect(createConfig({ hands: true })).not.toHaveProperty('hands');
     a.reactions.happy.duration = 1300;
     expect(b.reactions.happy.duration).toBe(800);
   });
@@ -35,13 +50,27 @@ describe('mascot domain', () => {
       validateConfig({
         ...createConfig(),
         color: 'url(evil)',
+        mouthColor: 'not-a-colour',
         size: 0,
         shape: 'human',
       }).length,
     ).toBeGreaterThanOrEqual(3);
     expect(validateConfig(createConfig())).toEqual([]);
+    const previousProject = createConfig();
+    delete previousProject.lashColor;
+    expect(validateConfig(previousProject)).toEqual([]);
+    expect(createConfig(previousProject).lashColor).toBe('#111218');
+    expect(
+      validateConfig({
+        ...createConfig(),
+        export: { ...createConfig().export, framework: 'next' },
+      }),
+    ).toContain('Choose React or Vue.js.');
+    expect(
+      validateConfig(createConfig({ export: { framework: 'vue' } })),
+    ).toEqual([]);
   });
-  it('provides exactly eight reactions with safe fallback', () => {
+  it('provides ten authored reactions with safe fallback', () => {
     expect(REACTIONS).toEqual([
       'idle',
       'happy',
@@ -51,9 +80,90 @@ describe('mascot domain', () => {
       'error',
       'success',
       'loading',
+      'sleeping',
+      'singing',
     ]);
     expect(resolveState('bogus')).toBe('idle');
+    expect(resolveState('special')).toBe('idle');
     expect(resolveState('happy')).toBe('happy');
+  });
+  it('keeps only approved silhouettes and rejects incompatible details', () => {
+    expect(SHAPES).not.toContain('bean');
+    expect(SHAPES).not.toContain('blob');
+    expect(SHAPES).not.toContain('flame');
+    expect(SHAPES).not.toContain('triangle');
+    expect(SHAPES).toContain('oval');
+    expect(SHAPES).toContain('egg');
+    expect(headsForShape('drop')).not.toContain('ears');
+    expect(headsForShape('oval')).toEqual(
+      expect.arrayContaining(['curl', 'bunny-ears']),
+    );
+    expect(headsForShape('egg')).toEqual(
+      expect.arrayContaining(['curl', 'bunny-ears']),
+    );
+    expect(headsForShape('wobbi')).toEqual([
+      'none',
+      'tuft',
+      'curl',
+      'round-ears',
+      'horns',
+      'halo',
+    ]);
+    expect(headsForShape('rounded-square')).toEqual([
+      'none',
+      'tuft',
+      'curl',
+      'horns',
+      'halo',
+    ]);
+    expect(accessoriesForShape('cloud')).not.toContain('hat');
+    expect(ACCESSORIES).toContain('sunglasses');
+    expect(ACCESSORIES).not.toEqual(expect.arrayContaining(['hat', 'cap']));
+    expect(validateConfig(createConfig({ shape: 'triangle' }))).toContain(
+      'Choose a supported shape.',
+    );
+    expect(validateConfig(createConfig({ shape: 'flame' }))).toContain(
+      'Choose a supported shape.',
+    );
+  });
+  it('offers a broader but validated expression system', () => {
+    expect(EYES).toHaveLength(12);
+    expect(EYES).toEqual(
+      expect.arrayContaining(['glossy', 'side-eye', 'wink', 'money']),
+    );
+    expect(EYES).not.toContain('stars');
+    expect(NOSES).toEqual([
+      'none',
+      'dot',
+      'round',
+      'muzzle',
+      'moustache',
+      'beak',
+    ]);
+    expect(BROWS).toEqual(['none', 'soft', 'straight', 'arched', 'worried']);
+    expect(MOUTHS).toHaveLength(8);
+    expect(MOUTHS).toEqual(expect.arrayContaining(['grin', 'pout', 'fangs']));
+    expect(MOUTHS).not.toContain('moustache');
+    expect(validateConfig(createConfig({ mouth: 'moustache' }))).toContain(
+      'Choose a supported mouth.',
+    );
+    expect(
+      validateConfig(createConfig({ nose: 'beak', mouth: 'grin' })),
+    ).toContain('A muzzle or beak cannot be combined with a mouth.');
+    expect(
+      validateConfig(createConfig({ nose: 'muzzle', mouth: 'smile' })),
+    ).toContain('A muzzle or beak cannot be combined with a mouth.');
+    expect(mouthsForNose('muzzle')).toEqual(['none']);
+    expect(mouthsForNose('beak')).toEqual(['none']);
+    expect(mouthsForNose('round')).toBe(MOUTHS);
+    expect(MOUTHS).not.toContain('kiss');
+    expect(validateConfig(createConfig({ mouth: 'kiss' }))).toContain(
+      'Choose a supported mouth.',
+    );
+    expect(DEPTHS).toEqual(['flat', 'soft', 'deep']);
+    expect(validateConfig({ ...createConfig(), depth: 'plastic' })).toContain(
+      'Choose supported depth.',
+    );
   });
   it('clamps timing and strength and preserves ordered enabled moves', () => {
     const motion = normalizeMotion({

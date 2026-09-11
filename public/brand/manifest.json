@@ -7,6 +7,6 @@
     { "file": "wobbi-wordmark-dark.png", "role": "Horizontal logo for dark surfaces", "background": "opaque charcoal", "width": 2048, "height": 768, "revision": "White wordmark and fine white mascot outline" },
     { "file": "wobbi-symbol.png", "role": "App symbol and favicon", "background": "transparent alpha", "width": 1254, "height": 1254, "revision": "Square symbol with legible eyes" }
   ],
-  "source": "Original user-supplied ChatGPT logo, edited with built-in Imagegen",
-  "usage": "Use the symbol beside live Wobbi text in the studio so the wordmark follows the global theme. Original files remain preserved at the repository root."
+  "source": "Approved Wobbi brand assets",
+  "usage": "Use the horizontal wordmark in the studio header and the transparent symbol for application icons."
 }

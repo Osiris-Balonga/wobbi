@@ -1,7 +1,7 @@
 import { createElement, useEffect, useRef } from 'react';
 import { resolveState } from '../../packages/core/config.js';
 import { renderParts } from '../../packages/core/render.js';
-import { mountMotion } from '../../packages/core/motion.js';
+import { mountCharacter } from '../../packages/core/motion.js';
 import './mascot.css';
 export function Mascot({
   config,
@@ -9,20 +9,20 @@ export function Mascot({
   size = config.size,
   playing = true,
   replay = 0,
+  interactive = false,
   ...props
 }) {
   const ref = useRef(null);
   const reaction = resolveState(state);
-  const motion = config.reactions[reaction];
   useEffect(
-    () => mountMotion(ref.current, motion, config.accessibility, playing),
-    [motion, config.accessibility, playing, replay],
+    () => mountCharacter(ref.current, config, reaction, playing, interactive),
+    [config, reaction, playing, replay, interactive],
   );
   return (
     <svg
       ref={ref}
       className="wobbi-mascot"
-      viewBox="0 0 256 256"
+      viewBox="-16 -16 288 288"
       width={size}
       height={size}
       role="img"

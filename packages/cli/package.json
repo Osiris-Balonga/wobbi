@@ -6,7 +6,7 @@
   "bin": {
     "wobbi": "./bin/wobbi.js"
   },
-  "description": "Local Wobbi V1 mascot installer; workspace only, not published",
+  "description": "Install validated Wobbi mascot exports from the local registry",
   "engines": {
     "node": ">=22"
   }

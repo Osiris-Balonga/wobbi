@@ -2,14 +2,14 @@
 import { readFile, mkdir, lstat, writeFile, unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { localRegistry } from '../../registry/index.js';
-import { createConfig } from '../../core/config.js';
-import { generateFiles } from '../../codegen/node.js';
+import { createConfig, validateConfig } from '../../core/config.js';
+import { generateFiles, generateVueFiles } from '../../codegen/node.js';
 
 const help = `Wobbi — local mascot registry
-Usage: wobbi add <slug> [--dir <folder>] [--framework react|next] [--force]
+Usage: wobbi add <slug> [--dir <folder>] [--framework react|vue] [--force]
        wobbi add --config <mascot.json> [--dir <folder>] [--force]
        wobbi list
-The V1 uses local presets. No remote registry or npm publication is implied.`;
+Presets are resolved from the local workspace registry.`;
 
 async function main(args) {
   if (args.length === 0 || args[0] === '--help') {
@@ -38,16 +38,23 @@ async function main(args) {
   if (options.config && slug) throw new Error('Use either a slug or --config.');
   if (!options.config && (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)))
     throw new Error('A valid lowercase mascot slug is required.');
-  if (options.framework && !['react', 'next'].includes(options.framework))
-    throw new Error('Framework must be react or next.');
-  const config = options.config
-    ? createConfig(
-        JSON.parse(await readFile(path.resolve(options.config), 'utf8')),
-      )
-    : localRegistry.resolve(slug);
+  if (options.framework && !['react', 'vue'].includes(options.framework))
+    throw new Error('Framework must be react or vue.');
+  let config;
+  if (options.config) {
+    const input = JSON.parse(
+      await readFile(path.resolve(options.config), 'utf8'),
+    );
+    const errors = validateConfig(input);
+    if (errors.length) throw new Error(errors.join('\n'));
+    config = createConfig(input);
+  } else config = localRegistry.resolve(slug);
   if (options.framework) config.export.framework = options.framework;
   const target = path.resolve(options.dir || config.export.folder);
-  const files = generateFiles(config);
+  const files =
+    config.export.framework === 'vue'
+      ? generateVueFiles(config)
+      : generateFiles(config);
   const entries = Object.entries(files).map(([name, content]) => ({
     file: path.join(target, name),
     content,

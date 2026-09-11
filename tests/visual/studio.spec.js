@@ -1,32 +1,43 @@
 import { test, expect } from '@playwright/test';
-const screens = [
-  ['design-preview', null, null],
-  ['design-grid', 'Grid', null],
-  ['motion', 'Motion', null],
-  ['settings', 'Settings', null],
-  ['export-install', 'Install', null],
-  ['export-files', 'Generated Files', null],
-  ['export-usage', 'Usage', null],
-  ['dark', 'Grid', 'dark'],
-];
-for (const [name, tab, theme] of screens) {
-  test(name, async ({ page }) => {
+for (const view of ['creation', 'details', 'export', 'mobile']) {
+  test(view, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
+    if (view === 'mobile')
+      await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
     await page.evaluate(() => document.fonts.ready);
-    if (tab) await page.getByRole('tab', { name: tab, exact: true }).click();
-    if (tab === 'Motion')
-      await page.getByLabel('Reaction to edit').selectOption('happy');
-    if (theme) await page.getByRole('button', { name: 'Dark theme' }).click();
-    await expect(
-      page.getByRole('tab', { name: tab || 'Design', exact: true }),
-    ).toHaveAttribute('aria-selected', 'true');
-    await expect(
-      page.getByRole('heading', {
-        name: tab === 'Settings' ? 'Mascot settings' : 'GhostEye',
-        exact: true,
-      }),
-    ).toBeVisible();
-    await expect(page).toHaveScreenshot(`${name}.png`, { fullPage: true });
+    if (view === 'details') {
+      await page
+        .getByRole('button', { name: 'Forme : Rond', exact: true })
+        .click();
+      await page.getByText('Apparence du corps', { exact: true }).click();
+      await page
+        .getByRole('button', { name: 'Couleur du corps #ffcc45', exact: true })
+        .click();
+      await page
+        .getByRole('button', { name: 'Bouche : Sourire', exact: true })
+        .click();
+      await page.getByRole('button', { name: /Accessoires & détails/ }).click();
+      await page
+        .getByRole('button', { name: /Voir \d+ détails de tête de plus/ })
+        .click();
+      await page
+        .getByRole('button', {
+          name: 'Tête : Oreilles de chat',
+          exact: true,
+        })
+        .click();
+      await page
+        .getByRole('button', { name: 'Accessoires : Lunettes', exact: true })
+        .click();
+      await page
+        .getByRole('button', { name: 'Accessoire', exact: true })
+        .click();
+    }
+    if (view === 'export')
+      await page.getByRole('button', { name: 'Exporter', exact: true }).click();
+    await expect(page).toHaveScreenshot(view + '.png', {
+      fullPage: view === 'mobile',
+    });
   });
 }

@@ -1,0 +1,30 @@
+name: Bug
+description: Signaler un comportement reproductible
+title: '[Bug] '
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Que se passe-t-il et quel résultat attendiez-vous ?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Donnez les étapes minimales et joignez un projet JSON si nécessaire.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environnement
+      placeholder: Navigateur, système, version Node.js
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Captures ou journaux

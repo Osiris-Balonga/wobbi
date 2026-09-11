@@ -1,37 +1,13 @@
-# Architecture de Wobbi V1
+# Architecture
 
-## Flux de données
+`createConfig()` construit le contrat courant d’un projet. `validateConfig()` refuse les champs inconnus, les valeurs non prises en charge et les combinaisons incompatibles avant tout import ou export. Cette séparation empêche une entrée externe de modifier silencieusement le dessin demandé.
 
-`Design → configuration validée → rendu SVG` et `configuration → générateur → fichiers sources` partagent le même modèle. La réaction visualisée est indépendante de la réaction par défaut exportée. Les réglages Motion modifient `config.reactions[reaction]` ; Settings travaille sur un brouillon validé à la sauvegarde.
+`renderParts(h, config, state)` assemble la géométrie SVG à partir de trois modules : le modèle des silhouettes, les effets de réaction et le rendu principal. React, l’adaptateur DOM autonome et les exports d’image appellent ces mêmes fonctions. Les éléments de tête et accessoires utilisent des points d’attache propres à chaque silhouette.
 
-Le hook `useStudio` détient la configuration et le thème. Les actions enregistrent une version JSON dans localStorage. Les données absentes ou corrompues restaurent les valeurs par défaut ; un stockage indisponible ne bloque pas l’édition et affiche un message demandant de télécharger la création.
+`sampleCharacter(config, state, time, look)` est une fonction pure du temps. `mountCharacter()` orchestre `requestAnimationFrame`, le suivi amorti du regard, la pause hors écran, la préférence de mouvement réduit et le nettoyage des ressources. Les exports média réutilisent les mêmes poses sans dépendre du pointeur de l’éditeur.
 
-## Domaine et rendu
+Le studio conserve les 40 dernières modifications. Une interaction continue, telle qu’un glisser dans le sélecteur de couleur, produit des aperçus transitoires puis une seule entrée d’historique et une seule écriture dans `localStorage`.
 
-`packages/core/config.js` définit huit états, les valeurs par défaut, les slugs, la validation et les plans d’animation. Durée : 200–5000 ms. Intensité : 0–100. Taille : 48–512 px. Contour : 0–16 px.
+Les générateurs copient le preset validé, la géométrie et le moteur dans des fichiers indépendants. Les projets React et Vue utilisent des modules ES ; la livraison JavaScript regroupe le rendu derrière une API globale et inclut une démonstration autonome. Aucun appel distant ni runtime Wobbi n’est nécessaire après export.
 
-`render.js` décrit les formes et expressions avec les primitives SVG de React. `motion.js` applique le plan via Web Animations API, écoute les changements de `prefers-reduced-motion` et utilise IntersectionObserver pour suspendre les animations hors écran. Le nettoyage annule toutes les animations et retire les écouteurs/observateurs. Chaque transformation corporelle dispose de son groupe SVG ; yeux et bouche utilisent leurs groupes dédiés. Les offsets et délais répartissent les mouvements selon l’ordre configuré, sans timeline graphique.
-
-## Génération
-
-`packages/codegen/generate.js` est commun au navigateur et à Node. Les adaptateurs chargent le **texte source canonique**, via les imports Vite `?raw` côté navigateur et le filesystem côté Node. On ne sérialise jamais une fonction minifiée avec `Function.toString()` : le build du studio ne peut donc pas renommer les références dans le code exporté.
-
-Le générateur valide le modèle puis écrit exactement quatre fichiers. Le composant contient sa propre configuration et la géométrie, `animations.js` les fonctions de domaine et le moteur de mouvement, `styles.css` des règles limitées à la classe du slug, et `index.js` l’export nommé. Le code généré utilise les primitives React `createElement` pour la géométrie et une enveloppe JSX lisible. Toutes les formes restent éditables ; aucun moteur opaque n’est requis.
-
-Le ZIP reprend le dossier choisi. Le JSON est un export séparé afin que le ZIP de sources contienne exactement quatre fichiers. La CLI peut installer ce JSON avec `--config`. Le framework Next.js ajoute la directive client ; aucun package Next.js n’est nécessaire pour la génération.
-
-## Registre et CLI
-
-`localRegistry` expose `list()` et `resolve(slug)`. Six presets sont embarqués. Aucun appel réseau ne tente de résoudre une mascotte. Un futur adaptateur distant devra gérer versions, intégrité et erreurs explicitement.
-
-La CLI détermine les chemins via `node:path`, vérifie tous les conflits, crée le dossier puis écrit les fichiers. Les écritures sans force sont exclusives (`wx`) et les nouveaux fichiers sont retirés si une écriture échoue. `--force` autorise le remplacement de fichiers ordinaires ; ce mode n’offre pas de transaction complète en cas de panne disque. Aucune publication n’a été effectuée. Le package CLI est privé et dépend des modules voisins du workspace.
-
-## Interface et accessibilité
-
-La navbar porte l’unique commande Light/Dark. Les trois colonnes héritent des mêmes variables CSS, y compris Export. Les blocs de code restent sombres. Les styles sont organisés par surface, avec les adaptations responsives centralisées.
-
-Les tabs utilisent sélection ARIA, focus mobile et flèches/Home/End. Les champs ont des labels explicitement associés. Les switches et les actions de copie sont nommés ; un statut live annonce les résultats. Les liens de Settings naviguent vers les sections correspondantes. Le dialogue de documentation s’appuie sur `<dialog>` natif pour le focus et Échap. La lecture est arrêtée au premier lancement pour laisser le contrôle à l’utilisateur.
-
-## Validation
-
-Les tests unitaires vérifient le domaine. Les tests de composants vérifient les commandes. Les intégrations vérifient sauvegarde, synchronisation et export. Les contrats écrivent, compilent, importent et rendent le code exporté en isolation. Les tests CLI travaillent dans les dossiers temporaires du système. Playwright vérifie le flux complet, un ZIP réel, les animations, l’accessibilité en navigateur et huit captures stables. Voir `tdd-log.md` pour les RED/GREEN observés.
+`createSvg()` sérialise un SVG isolé. Le PNG le dessine sur canvas, le GIF utilise 54 images à 15 images/s et la vidéo WebM s’appuie sur `MediaRecorder`. Les signaux d’annulation, URLs Blob, pistes, observateurs et écouteurs sont nettoyés dans tous les chemins de sortie.
