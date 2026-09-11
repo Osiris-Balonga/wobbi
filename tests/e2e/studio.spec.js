@@ -23,7 +23,6 @@ test('brand identity, live gaze, customization, undo, project round trip', async
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
-  await expect(page.locator('.special-tag')).toHaveCount(0);
   await expect(
     page.getByRole('img', { name: 'Wobbi', exact: true }),
   ).toHaveAttribute('src', '/brand/wobbi-wordmark.png');
@@ -122,10 +121,8 @@ test('brand identity, live gaze, customization, undo, project round trip', async
     'fill',
     '#ffcc45',
   );
-  await page
-    .getByRole('button', { name: 'Réaction : Oreilles', exact: true })
-    .click();
-  await expect(mascot(page)).toHaveAttribute('data-state', 'special');
+  await page.getByRole('button', { name: 'Faire réagir la mascotte' }).click();
+  await expect(mascot(page)).toHaveAttribute('data-state', 'happy');
   await expect(mascot(page)).toHaveAttribute('data-state', 'idle', {
     timeout: 4000,
   });
@@ -306,7 +303,7 @@ test('vanilla download has a working state API, pointer response and disposal', 
     'renderer.js',
     'styles.css',
   ]);
-  expect(strFromU8(files['index.html'])).toContain('data-state="special"');
+  expect(strFromU8(files['index.html'])).not.toContain('data-state="special"');
   const dir = await mkdtemp(path.join(tmpdir(), 'wobbi-vanilla-'));
   for (const [name, bytes] of Object.entries(files)) {
     await mkdir(path.dirname(path.join(dir, name)), { recursive: true });

@@ -40,7 +40,7 @@ it('exports every selected setting and renders deep volume in React', async () =
     size: 180,
     shape: 'oval',
     eyes: 'sleepy',
-    nose: 'muzzle',
+    nose: 'round',
     brows: 'worried',
     mouth: 'fangs',
     depth: 'deep',

@@ -27,6 +27,8 @@ export const SHAPE_FITS = {
     sideLeft: 43,
     sideRight: 217,
     templeHalf: 72,
+    cheekX: [70, 186],
+    cheekRadiusX: 14,
   },
   ghost: {
     faceY: 0,
@@ -36,6 +38,8 @@ export const SHAPE_FITS = {
     sideLeft: 43,
     sideRight: 213,
     templeHalf: 77,
+    cheekX: [69, 187],
+    cheekRadiusX: 14,
   },
   circle: {
     faceY: 0,
@@ -45,6 +49,8 @@ export const SHAPE_FITS = {
     sideLeft: 38,
     sideRight: 218,
     templeHalf: 78,
+    cheekX: [68, 188],
+    cheekRadiusX: 15,
   },
   'rounded-square': {
     faceY: 0,
@@ -54,6 +60,8 @@ export const SHAPE_FITS = {
     sideLeft: 41,
     sideRight: 215,
     templeHalf: 76,
+    cheekX: [66, 190],
+    cheekRadiusX: 15,
   },
   cloud: {
     faceY: 2,
@@ -63,6 +71,8 @@ export const SHAPE_FITS = {
     sideLeft: 28,
     sideRight: 232,
     templeHalf: 82,
+    cheekX: [62, 194],
+    cheekRadiusX: 15,
   },
   drop: {
     faceY: 19,
@@ -72,6 +82,8 @@ export const SHAPE_FITS = {
     sideLeft: 42,
     sideRight: 217,
     templeHalf: 67,
+    cheekX: [69, 187],
+    cheekRadiusX: 14,
   },
   oval: {
     faceY: 0,
@@ -81,6 +93,9 @@ export const SHAPE_FITS = {
     sideLeft: 52,
     sideRight: 204,
     templeHalf: 64,
+    glassesArms: false,
+    cheekX: [72, 184],
+    cheekRadiusX: 12,
   },
   triangle: {
     faceY: 19,
@@ -90,6 +105,8 @@ export const SHAPE_FITS = {
     sideLeft: 33,
     sideRight: 223,
     templeHalf: 65,
+    cheekX: [69, 187],
+    cheekRadiusX: 14,
   },
 };
 

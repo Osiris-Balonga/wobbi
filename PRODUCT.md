@@ -22,7 +22,7 @@ Simple, ludique, expressif. Logo horizontal existant conservé, illustration du 
 
 ## Design Principles
 
-La mascotte est présente et vivante dès l’arrivée. Les réglages techniques ne structurent pas l’écran principal. Toutes les bouches et familles d’yeux sont illustrées. Chaque famille de regards conserve une expression adaptée, y compris en chargement. Les réactions spéciales dépendent des formes et éléments de tête.
+La mascotte est présente et vivante dès l’arrivée. Les réglages techniques ne structurent pas l’écran principal. Toutes les bouches et familles d’yeux sont illustrées. Chaque famille de regards conserve une expression adaptée, y compris en chargement. Les réactions restent cohérentes entre les formes, sans comportement caché propre à une silhouette.
 
 ## Accessibility
 

@@ -39,25 +39,6 @@ export function mountMotion(element, motion, preferences, playing) {
   };
 }
 
-export function specialLabel(config) {
-  if (config.head === 'ears') return 'Oreilles';
-  if (config.head === 'bunny-ears') return 'Bond de lapin';
-  if (config.head === 'round-ears') return 'Oreilles joyeuses';
-  if (config.head === 'halo') return 'Éclat céleste';
-  if (config.head === 'horns') return 'Malice';
-  return (
-    {
-      wobbi: 'Coucou !',
-      ghost: 'Boo !',
-      drop: 'Grande éclaboussure',
-      oval: 'Balancement',
-      cloud: 'Orage !',
-      triangle: 'Pirouette',
-      'rounded-square': 'Bascule',
-      circle: 'Rebond',
-    }[config.shape] || 'Coucou !'
-  );
-}
 export function reactionDuration(state) {
   return (
     {
@@ -70,7 +51,6 @@ export function reactionDuration(state) {
       loading: 3600,
       sleeping: 3600,
       singing: 2800,
-      special: 2800,
     }[state] || 0
   );
 }
@@ -108,18 +88,14 @@ export function sampleCharacter(config, state, time, look = { x: 0, y: 0 }) {
       u = v * v * (3 - 2 * v);
     return a.slice(1).map((x, i) => x + (z[i + 1] - x) * u);
   };
-  if (
-    ['happy', 'success'].includes(state) ||
-    (state === 'special' && ['circle', 'wobbi'].includes(config.shape))
-  ) {
+  if (['happy', 'success'].includes(state)) {
     const p = Math.min(t / 1.45, 1);
-    const jumpHeight = state === 'special' ? -58 : -32;
     const [y, sx, sy, r] = points(
       [
         [0, 0, 1, 1, 0],
         [0.13, 9, 1.12, 0.86, -3],
         [0.29, -20, 0.94, 1.12, 1],
-        [0.48, jumpHeight, 0.98, 1.04, 4],
+        [0.48, -32, 0.98, 1.04, 4],
         [0.68, 5, 1.13, 0.86, -2],
         [0.83, -3, 0.98, 1.03, 1],
         [1, 0, 1, 1, 0],
@@ -167,40 +143,6 @@ export function sampleCharacter(config, state, time, look = { x: 0, y: 0 }) {
     frame.sy = 1 + Math.sin(Math.min(t / 0.9, 1) * Math.PI) * 0.14;
     frame.sx = 2 - frame.sy;
     frame.y = -Math.sin(Math.min(t / 0.9, 1) * Math.PI) * 8;
-  }
-  if (state === 'special') {
-    const envelope = Math.sin(Math.min(t / 2.2, 1) * Math.PI);
-    if (config.shape === 'ghost') {
-      frame.opacity = 1 - envelope * 0.8;
-      frame.y -= envelope * 20;
-      frame.sx = 1 - envelope * 0.18;
-    }
-    if (config.shape === 'drop') {
-      frame.sy = 1 + Math.sin(t * 8) * 0.24 * envelope;
-      frame.sx = 2 - frame.sy;
-      frame.y = -envelope * 38;
-    }
-    if (config.shape === 'oval') {
-      frame.y = -envelope * 12;
-      frame.sx = 1 + envelope * 0.04;
-      frame.sy = 1 - envelope * 0.025;
-      frame.rotate = Math.sin(t * 5) * 10 * envelope;
-    }
-    if (config.shape === 'cloud') {
-      frame.x = Math.sin(t * 25) * 4 * envelope;
-      frame.y = -envelope * 10;
-      frame.sx = 1 + envelope * 0.09;
-      frame.sy = 1 - envelope * 0.04;
-    }
-    if (config.shape === 'rounded-square') {
-      frame.rotate = Math.sin(t * 5) * 14 * envelope;
-      frame.y = -envelope * 5;
-    }
-    if (config.shape === 'triangle')
-      frame.rotate = Math.sin(t * 3) * 22 * envelope;
-    if (['ears', 'bunny-ears', 'round-ears'].includes(config.head))
-      frame.ears = Math.sin(t * 15) * 16 * envelope;
-    if (config.head === 'horns') frame.rotate = Math.sin(t * 6) * 10 * envelope;
   }
   frame.shadow = 1 + Math.min(0, frame.y) * 0.012;
   return frame;
@@ -277,21 +219,6 @@ export function applyCharacterFrame(element, f, time = 0) {
     'transform',
     `translate(0 ${-Math.abs(Math.sin(time * 3.4)) * 9})`,
   );
-  element.querySelectorAll('[data-splash-drop]').forEach((node, i) => {
-    const lift = Math.abs(Math.sin(time * 4.2 + i * 0.8));
-    node.setAttribute('transform', `translate(0 ${-lift * 13})`);
-    node.setAttribute('opacity', String(0.45 + lift * 0.55));
-  });
-  const lightning = element.querySelector('[data-storm-lightning]');
-  lightning?.setAttribute(
-    'opacity',
-    String(Math.sin(time * 11) > 0.62 ? 1 : 0.18),
-  );
-  element.querySelectorAll('[data-storm-rain]').forEach((node, i) => {
-    const fall = (time * 38 + i * 13) % 25;
-    node.setAttribute('transform', `translate(0 ${fall})`);
-    node.setAttribute('opacity', String(1 - fall / 31));
-  });
 }
 export function mountCharacter(
   element,

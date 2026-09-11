@@ -14,6 +14,7 @@ import {
   NOSES,
   BROWS,
   headsForShape,
+  mouthsForNose,
   MOUTHS,
   SHAPES,
 } from '../../packages/core/config.js';
@@ -78,6 +79,7 @@ describe('mascot domain', () => {
       'singing',
     ]);
     expect(resolveState('bogus')).toBe('idle');
+    expect(resolveState('special')).toBe('idle');
     expect(resolveState('happy')).toBe('happy');
   });
   it('keeps only approved silhouettes and rejects incompatible details', () => {
@@ -89,6 +91,21 @@ describe('mascot domain', () => {
     expect(headsForShape('oval')).toEqual(
       expect.arrayContaining(['curl', 'bunny-ears']),
     );
+    expect(headsForShape('wobbi')).toEqual([
+      'none',
+      'tuft',
+      'curl',
+      'round-ears',
+      'horns',
+      'halo',
+    ]);
+    expect(headsForShape('rounded-square')).toEqual([
+      'none',
+      'tuft',
+      'curl',
+      'horns',
+      'halo',
+    ]);
     expect(headsForShape('triangle')).toEqual(['none', 'halo']);
     expect(accessoriesForShape('triangle')).not.toContain('hat');
     expect(accessoriesForShape('cloud')).not.toContain('hat');
@@ -141,7 +158,13 @@ describe('mascot domain', () => {
     );
     expect(
       validateConfig(createConfig({ nose: 'beak', mouth: 'grin' })),
-    ).toContain('A beak cannot be combined with a mouth.');
+    ).toContain('A muzzle or beak cannot be combined with a mouth.');
+    expect(
+      validateConfig(createConfig({ nose: 'muzzle', mouth: 'smile' })),
+    ).toContain('A muzzle or beak cannot be combined with a mouth.');
+    expect(mouthsForNose('muzzle')).toEqual(['none']);
+    expect(mouthsForNose('beak')).toEqual(['none']);
+    expect(mouthsForNose('round')).toBe(MOUTHS);
     expect(MOUTHS).not.toContain('kiss');
     expect(validateConfig(createConfig({ mouth: 'kiss' }))).toContain(
       'Choose a supported mouth.',

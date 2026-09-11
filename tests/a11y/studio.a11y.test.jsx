@@ -17,6 +17,9 @@ it('labels the creation, detailed choices and export dialog accessibly', async (
 it('provides a keyboard-adjustable custom hue', () => {
   render(<App />);
   fireEvent.click(
+    screen.getByRole('button', { name: 'Apparence du corps', exact: true }),
+  );
+  fireEvent.click(
     screen.getByRole('button', {
       name: 'Couleur du corps personnalisée',
       exact: true,

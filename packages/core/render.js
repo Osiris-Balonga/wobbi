@@ -422,19 +422,27 @@ export function renderParts(h, config, state = 'idle') {
           ? 0
           : 8;
   const mouthY = 174 + faceY * 0.35 + noseSpacing;
+  const configuredMouth = ['muzzle', 'beak'].includes(config.nose)
+    ? 'none'
+    : config.mouth;
+  const muzzleSurprise = config.nose === 'muzzle' && startled;
   let mouth = null;
-  if (config.nose !== 'beak' && config.mouth !== 'none') {
+  if (configuredMouth !== 'none' || muzzleSurprise) {
     let d =
       fearful || angry
         ? `M116 ${mouthY + 4} Q128 ${mouthY - 10} 140 ${mouthY + 4}`
         : `M115 ${mouthY - 4} Q128 ${mouthY + 12} 141 ${mouthY - 4}`;
-    if (config.mouth === 'small' && !happy) d = `M122 ${mouthY} H134`;
+    if (configuredMouth === 'small' && !happy) d = `M122 ${mouthY} H134`;
     let mouthParts;
-    if (config.mouth === 'open' || startled || singing)
+    if (configuredMouth === 'open' || muzzleSurprise || startled || singing)
       mouthParts = [
         ellipse(128, mouthY, singing ? 13 : 10, singing ? 16 : happy ? 13 : 9, {
           fill: mouthInk,
-          'data-mouth-style': singing ? 'singing' : 'open',
+          'data-mouth-style': muzzleSurprise
+            ? 'muzzle-surprise'
+            : singing
+              ? 'singing'
+              : 'open',
         }),
         ...(config.depth === 'flat'
           ? []
@@ -448,7 +456,7 @@ export function renderParts(h, config, state = 'idle') {
               }),
             ]),
       ];
-    else if (config.mouth === 'tooth' && !fearful && !angry)
+    else if (configuredMouth === 'tooth' && !fearful && !angry)
       mouthParts = [
         path(`M110 ${mouthY - 5} Q128 ${mouthY + 20} 146 ${mouthY - 5}Z`, {
           fill: mouthInk,
@@ -470,7 +478,7 @@ export function renderParts(h, config, state = 'idle') {
           fill: '#ffffff',
         }),
       ];
-    else if (config.mouth === 'grin')
+    else if (configuredMouth === 'grin')
       mouthParts = [
         path(`M106 ${mouthY - 6} Q128 ${mouthY + 22} 150 ${mouthY - 6}Z`, {
           fill: '#ffffff',
@@ -485,7 +493,7 @@ export function renderParts(h, config, state = 'idle') {
           opacity: 0.35,
         }),
       ];
-    else if (config.mouth === 'pout')
+    else if (configuredMouth === 'pout')
       mouthParts = [
         path(`M116 ${mouthY + 4} Q128 ${mouthY - 10} 140 ${mouthY + 4}`, {
           fill: 'none',
@@ -494,7 +502,7 @@ export function renderParts(h, config, state = 'idle') {
           strokeLinecap: 'round',
         }),
       ];
-    else if (config.mouth === 'fangs')
+    else if (configuredMouth === 'fangs')
       mouthParts = [
         path(`M106 ${mouthY - 2} Q128 ${mouthY + 8} 150 ${mouthY - 2}`, {
           fill: 'none',
@@ -574,8 +582,10 @@ export function renderParts(h, config, state = 'idle') {
       const direction = i ? 1 : -1;
       const baseX = headX + direction * crownHalf * 0.43;
       const tipX = baseX + direction * 8;
-      const outerPath = `M${baseX - 13} ${headY + 23} C${baseX - 16} ${headY - 6} ${tipX - 17} ${headY - 66} ${tipX} ${headY - 72} C${tipX + 18} ${headY - 67} ${baseX + 17} ${headY - 6} ${baseX + 13} ${headY + 23}Z`;
-      const innerPath = `M${baseX - 6} ${headY + 8} C${baseX - 7} ${headY - 16} ${tipX - 8} ${headY - 52} ${tipX} ${headY - 58} C${tipX + 9} ${headY - 51} ${baseX + 8} ${headY - 15} ${baseX + 6} ${headY + 8}Z`;
+      const earHeight = Math.min(72, headY + 14);
+      const earScale = earHeight / 72;
+      const outerPath = `M${baseX - 13} ${headY + 23} C${baseX - 16} ${headY - 6 * earScale} ${tipX - 17} ${headY - 66 * earScale} ${tipX} ${headY - earHeight} C${tipX + 18} ${headY - 67 * earScale} ${baseX + 17} ${headY - 6 * earScale} ${baseX + 13} ${headY + 23}Z`;
+      const innerPath = `M${baseX - 6} ${headY + 8} C${baseX - 7} ${headY - 16 * earScale} ${tipX - 8} ${headY - 52 * earScale} ${tipX} ${headY - 58 * earScale} C${tipX + 9} ${headY - 51 * earScale} ${baseX + 8} ${headY - 15 * earScale} ${baseX + 6} ${headY + 8}Z`;
       head.push(
         group(
           `bunny-ear-${i}`,
@@ -669,9 +679,13 @@ export function renderParts(h, config, state = 'idle') {
         { fill: 'none', stroke: config.accessoryColor, strokeWidth: 5 },
         ellipse(101, ey, 29, 33),
         ellipse(160, ey, 29, 33),
-        path(
-          `M129 ${ey - 4} Q131 ${ey - 8} 133 ${ey - 4} M72 ${ey - 5} L${128 - fit.templeHalf} ${ey - 9} M189 ${ey - 5} L${128 + fit.templeHalf} ${ey - 9}`,
-        ),
+        path(`M129 ${ey - 4} Q131 ${ey - 8} 133 ${ey - 4}`),
+        fit.glassesArms === false
+          ? null
+          : path(
+              `M72 ${ey - 5} L${128 - fit.templeHalf} ${ey - 9} M189 ${ey - 5} L${128 + fit.templeHalf} ${ey - 9}`,
+              { 'data-accessory-piece': 'glasses-arms' },
+            ),
       ),
     );
   if (config.accessory === 'headphones') {
@@ -763,14 +777,15 @@ export function renderParts(h, config, state = 'idle') {
     );
   if (config.accessory === 'blush')
     accessoriesFront.push(
-      ellipse(68, ey + 39, 15, 7, {
+      ellipse(fit.cheekX[0], ey + 39, fit.cheekRadiusX, 7, {
         fill: config.accentColor,
         opacity: 0.56,
+        'data-accessory-piece': 'left-blush',
       }),
-      ellipse(194, ey + 39, 15, 7, {
+      ellipse(fit.cheekX[1], ey + 39, fit.cheekRadiusX, 7, {
         fill: config.accentColor,
         opacity: 0.56,
-        'data-accessory-piece': 'blush',
+        'data-accessory-piece': 'right-blush',
       }),
     );
   if (config.accessory === 'freckles')
@@ -886,6 +901,6 @@ export function renderParts(h, config, state = 'idle') {
       ellipse(128, 238, 55, 6, { fill: '#30214c', opacity: 0.1 }),
     ),
     body,
-    ...renderEffects({ n, path, ellipse, group }, config, state, closedEyeInk),
+    ...renderEffects({ n, path, ellipse, group }, config, state),
   );
 }

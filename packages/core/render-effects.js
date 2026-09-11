@@ -1,4 +1,4 @@
-export function renderEffects(kit, config, state, closedEyeInk) {
+export function renderEffects(kit, config, state) {
   const { n, path, ellipse, group } = kit;
   return [
     state === 'thinking'
@@ -78,54 +78,6 @@ export function renderEffects(kit, config, state, closedEyeInk) {
           }),
           ellipse(191, 84, 8, 6, { fill: config.accentColor }),
           ellipse(215, 75, 8, 6, { fill: config.accentColor }),
-        )
-      : null,
-    state === 'special' && config.shape === 'drop'
-      ? n(
-          'g',
-          { 'data-part': 'reaction-effect', 'data-effect': 'splash' },
-          path('M65 221 Q94 207 116 225 Q142 204 190 222', {
-            fill: 'none',
-            stroke: config.accentColor,
-            strokeWidth: 7,
-            strokeLinecap: 'round',
-          }),
-          ...[
-            [77, 205, 69, 187],
-            [105, 211, 101, 187],
-            [151, 210, 157, 184],
-            [180, 205, 190, 190],
-          ].map(([x1, y1, x2, y2], i) =>
-            path(`M${x1} ${y1} Q${(x1 + x2) / 2} ${y2 - 8} ${x2} ${y2}`, {
-              fill: 'none',
-              stroke: config.accentColor,
-              strokeWidth: 5,
-              strokeLinecap: 'round',
-              'data-splash-drop': i,
-            }),
-          ),
-        )
-      : null,
-    state === 'special' && config.shape === 'cloud'
-      ? n(
-          'g',
-          { 'data-part': 'reaction-effect', 'data-effect': 'storm' },
-          path('M124 188 L110 216 H126 L116 244 L151 205 H134 L145 188Z', {
-            fill: '#ffcc45',
-            stroke: closedEyeInk,
-            strokeWidth: 2,
-            strokeLinejoin: 'round',
-            'data-storm-lightning': true,
-          }),
-          ...[77, 96, 161, 181].map((x, i) =>
-            path(`M${x} 196 L${x - 5} 222`, {
-              fill: 'none',
-              stroke: '#61a9ff',
-              strokeWidth: 5,
-              strokeLinecap: 'round',
-              'data-storm-rain': i,
-            }),
-          ),
         )
       : null,
     state === 'loading'

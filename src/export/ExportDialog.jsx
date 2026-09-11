@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Check,
+  ChevronDown,
   Code2,
   Copy,
   Download,
@@ -16,13 +17,13 @@ import {
   REACTIONS,
   validateConfig,
 } from '../../packages/core/config.js';
-import { specialLabel } from '../../packages/core/motion.js';
 import {
   generateFiles,
   generateVanillaFiles,
   generateVueFiles,
 } from '../../packages/codegen/browser.js';
 import { Mascot } from '../mascot/Mascot.jsx';
+import { DisclosurePanel } from '../studio/Disclosure.jsx';
 import { reactionLabels } from '../studio/catalog.js';
 import { downloadBlob } from './download.js';
 import {
@@ -107,6 +108,7 @@ export function ExportDialog({ config, onClose, notify }) {
   const [selectedFile, setSelectedFile] = useState('');
   const [copiedFile, setCopiedFile] = useState('');
   const [busy, setBusy] = useState(false);
+  const [advanced, setAdvanced] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
 
@@ -348,17 +350,31 @@ export function ExportDialog({ config, onClose, notify }) {
                     />
                   </label>
                   <p className="export-help">{deliveryHelp}</p>
-                  <details>
-                    <summary>Options avancées</summary>
-                    <label>
-                      Dossier conseillé
-                      <input
-                        value={folder}
-                        disabled={busy}
-                        onChange={(event) => setFolder(event.target.value)}
-                      />
-                    </label>
-                  </details>
+                  <div className="export-advanced">
+                    <button
+                      type="button"
+                      className="export-advanced-trigger"
+                      aria-expanded={advanced}
+                      aria-controls="export-advanced-options"
+                      onClick={() => setAdvanced((value) => !value)}
+                    >
+                      Options avancées
+                      <ChevronDown size={14} aria-hidden="true" />
+                    </button>
+                    <DisclosurePanel
+                      open={advanced}
+                      id="export-advanced-options"
+                    >
+                      <label>
+                        Dossier conseillé
+                        <input
+                          value={folder}
+                          disabled={busy}
+                          onChange={(event) => setFolder(event.target.value)}
+                        />
+                      </label>
+                    </DisclosurePanel>
+                  </div>
                 </>
               ) : kind === 'project' ? (
                 <p className="export-help">
@@ -374,11 +390,9 @@ export function ExportDialog({ config, onClose, notify }) {
                       disabled={busy}
                       onChange={(event) => setState(event.target.value)}
                     >
-                      {[...REACTIONS, 'special'].map((reaction) => (
+                      {REACTIONS.map((reaction) => (
                         <option key={reaction} value={reaction}>
-                          {reaction === 'special'
-                            ? specialLabel(config)
-                            : reactionLabels[reaction]}
+                          {reactionLabels[reaction]}
                         </option>
                       ))}
                     </select>

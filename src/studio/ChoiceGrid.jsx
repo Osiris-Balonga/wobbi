@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Mascot } from '../mascot/Mascot.jsx';
+import { DisclosurePanel } from './Disclosure.jsx';
 
 function contrastInk(hex) {
   const channels = hex
@@ -33,61 +34,68 @@ export function ChoiceGrid({
   const [expanded, setExpanded] = useState(() => selectedIsHidden);
   const canToggle = values.length > collapsedCount;
   const showAll = expanded || selectedIsHidden;
-  const visibleValues = showAll ? values : values.slice(0, collapsedCount);
+  const primaryValues = values.slice(0, collapsedCount);
+  const extraValues = values.slice(collapsedCount);
+  const renderChoice = (value) => {
+    const c = { ...config, [field]: value };
+    const contextualPreview = ['eyes', 'mouth', 'nose', 'brows'].includes(kind);
+    return (
+      <button
+        type="button"
+        key={value}
+        className={`choice ${kind}-choice`}
+        aria-label={title + ' : ' + labels[value]}
+        aria-pressed={config[field] === value}
+        disabled={disabledValues.includes(value)}
+        style={
+          contextualPreview
+            ? {
+                '--choice-surface': config.color,
+                '--choice-ink': contrastInk(config.color),
+              }
+            : undefined
+        }
+        onClick={() => onChange(value)}
+      >
+        {kind === 'eyes' ? (
+          <EyePreview config={c} />
+        ) : kind === 'mouth' ? (
+          <MouthPreview config={c} />
+        ) : kind === 'nose' || kind === 'brows' ? (
+          <FaceDetailPreview config={c} kind={kind} />
+        ) : (
+          <Mascot
+            config={
+              field === 'shape'
+                ? {
+                    ...c,
+                    head: 'none',
+                    accessory: 'none',
+                    mouth: 'none',
+                  }
+                : c
+            }
+            playing={false}
+            size={54}
+          />
+        )}
+        <span>{labels[value]}</span>
+      </button>
+    );
+  };
   return (
     <section className="choice-section">
       <h2>{title}</h2>
       <div className={`choice-grid columns-${columns}`}>
-        {visibleValues.map((value) => {
-          const c = { ...config, [field]: value };
-          const contextualPreview = ['eyes', 'mouth', 'nose', 'brows'].includes(
-            kind,
-          );
-          return (
-            <button
-              type="button"
-              key={value}
-              className={`choice ${kind}-choice`}
-              aria-label={title + ' : ' + labels[value]}
-              aria-pressed={config[field] === value}
-              disabled={disabledValues.includes(value)}
-              style={
-                contextualPreview
-                  ? {
-                      '--choice-surface': config.color,
-                      '--choice-ink': contrastInk(config.color),
-                    }
-                  : undefined
-              }
-              onClick={() => onChange(value)}
-            >
-              {kind === 'eyes' ? (
-                <EyePreview config={c} />
-              ) : kind === 'mouth' ? (
-                <MouthPreview config={c} />
-              ) : kind === 'nose' || kind === 'brows' ? (
-                <FaceDetailPreview config={c} kind={kind} />
-              ) : (
-                <Mascot
-                  config={
-                    field === 'shape'
-                      ? {
-                          ...c,
-                          head: 'none',
-                          accessory: 'none',
-                          mouth: 'none',
-                        }
-                      : c
-                  }
-                  playing={false}
-                  size={54}
-                />
-              )}
-              <span>{labels[value]}</span>
-            </button>
-          );
-        })}
+        {primaryValues.map(renderChoice)}
       </div>
+      {canToggle && (
+        <DisclosurePanel open={showAll} className="choice-more">
+          <div className={`choice-grid columns-${columns}`}>
+            {extraValues.map(renderChoice)}
+          </div>
+        </DisclosurePanel>
+      )}
       {canToggle && (
         <button
           type="button"
@@ -140,6 +148,8 @@ function FaceDetailPreview({ config, kind }) {
           shape: 'circle',
           color: config.color,
           eyes: kind === 'brows' ? 'classic' : 'dots',
+          nose: kind === 'nose' ? config.nose : 'none',
+          brows: kind === 'brows' ? config.brows : 'none',
           mouth: 'none',
           head: 'none',
           accessory: 'none',
@@ -163,6 +173,8 @@ function EyePreview({ config }) {
         config={{
           ...config,
           shape: 'circle',
+          nose: 'none',
+          brows: 'none',
           mouth: 'none',
           head: 'none',
           accessory: 'none',
@@ -203,6 +215,8 @@ function MouthPreview({ config }) {
           shape: 'circle',
           color: config.color,
           eyes: 'dots',
+          nose: 'none',
+          brows: 'none',
           head: 'none',
           accessory: 'none',
           outlineWidth: 0,

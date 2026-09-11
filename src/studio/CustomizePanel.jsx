@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { ChevronDown, Glasses } from 'lucide-react';
 import {
   DEPTHS,
@@ -9,9 +9,11 @@ import {
   SHAPES,
   accessoriesForShape,
   headsForShape,
+  mouthsForNose,
 } from '../../packages/core/config.js';
 import { ChoiceGrid } from './ChoiceGrid.jsx';
 import { ColorPicker, Swatches } from './ColorPicker.jsx';
+import { DisclosurePanel } from './Disclosure.jsx';
 import {
   accessoryLabels,
   eyeLabels,
@@ -59,14 +61,24 @@ function InlineColorControl({
 }
 
 function AppearanceDisclosure({ title, children, className = '' }) {
+  const [open, setOpen] = useState(false);
+  const contentId = useId();
   return (
-    <details className={`appearance-disclosure ${className}`}>
-      <summary>
+    <section className={`appearance-disclosure ${className}`}>
+      <button
+        type="button"
+        className="appearance-trigger"
+        aria-expanded={open}
+        aria-controls={contentId}
+        onClick={() => setOpen((value) => !value)}
+      >
         <span>{title}</span>
         <ChevronDown size={15} aria-hidden="true" />
-      </summary>
-      <div className="appearance-content">{children}</div>
-    </details>
+      </button>
+      <DisclosurePanel open={open} id={contentId}>
+        <div className="appearance-content">{children}</div>
+      </DisclosurePanel>
+    </section>
   );
 }
 
@@ -301,7 +313,11 @@ export function CustomizePanel({
         collapsedCount={3}
         itemLabel="nez"
         onChange={(nose) =>
-          patch(nose === 'beak' ? { nose, mouth: 'none' } : { nose })
+          patch(
+            mouthsForNose(nose).includes(config.mouth)
+              ? { nose }
+              : { nose, mouth: 'none' },
+          )
         }
       >
         <AppearanceDisclosure title="Teinte du nez">
@@ -358,11 +374,9 @@ export function CustomizePanel({
         columns={3}
         collapsedCount={3}
         itemLabel="bouches"
-        disabledValues={
-          config.nose === 'beak'
-            ? MOUTHS.filter((mouth) => mouth !== 'none')
-            : []
-        }
+        disabledValues={MOUTHS.filter(
+          (mouth) => !mouthsForNose(config.nose).includes(mouth),
+        )}
         onChange={(mouth) => patch({ mouth })}
       >
         <AppearanceDisclosure title="Teinte de la bouche">
@@ -396,8 +410,12 @@ export function CustomizePanel({
         <ChevronDown className="details-chevron" size={15} />
       </button>
 
-      {details && (
-        <div className="details-disclosure" id="character-details">
+      <DisclosurePanel
+        open={details}
+        id="character-details"
+        className="details-motion"
+      >
+        <div className="details-disclosure">
           <ChoiceGrid
             title="Tête"
             field="head"
@@ -485,7 +503,7 @@ export function CustomizePanel({
             />
           </label>
         </div>
-      )}
+      </DisclosurePanel>
     </aside>
   );
 }

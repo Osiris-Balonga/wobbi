@@ -11,7 +11,6 @@ const REACTION_LABELS = {
   loading: 'Chargement',
   sleeping: 'Sommeil',
   singing: 'Chant',
-  special: 'Spécial',
 };
 
 function prepare(input) {

@@ -29,7 +29,7 @@ it('keeps distinct eye families through expressions across every body', () => {
 });
 it('keeps every eye family structurally coherent through every reaction', () => {
   for (const eyes of EYES)
-    for (const state of [...REACTIONS, 'special']) {
+    for (const state of REACTIONS) {
       const markup = renderToStaticMarkup(
         renderParts(createElement, createConfig({ eyes }), state),
       );
@@ -42,7 +42,7 @@ it('adapts sleepy eyelids to reaction intent instead of stacking expressions', (
     renderToStaticMarkup(
       renderParts(createElement, createConfig({ eyes: 'sleepy' }), state),
     );
-  for (const state of ['idle', 'thinking', 'loading', 'singing', 'special'])
+  for (const state of ['idle', 'thinking', 'loading', 'singing'])
     expect(
       (renderSleepy(state).match(/data-eye-lid="sleepy"/g) || []).length,
     ).toBe(2);
@@ -68,7 +68,7 @@ it('opens both wink eyes for surprise so neither eye becomes empty', () => {
 });
 it('never invents an absent mouth, nose or eyebrows for a reaction', () => {
   const config = createConfig({ nose: 'none', brows: 'none', mouth: 'none' });
-  for (const state of [...REACTIONS, 'special']) {
+  for (const state of REACTIONS) {
     const markup = renderToStaticMarkup(
       renderParts(createElement, config, state),
     );
@@ -91,16 +91,15 @@ it('authors a short complete blink and settles a jump back to rest', () => {
     rotate: 0,
   });
 });
-it('provides shape-specific motion without turning waiting into sleep', () => {
-  const ghost = sampleCharacter(createConfig({ shape: 'ghost' }), 'special', 1);
-  const oval = sampleCharacter(createConfig({ shape: 'oval' }), 'special', 1);
-  expect(ghost.opacity).toBeLessThan(0.4);
-  expect(oval.y).toBeLessThan(-5);
+it('keeps waiting distinct from sleep without shape-specific states', () => {
   const wait = renderToStaticMarkup(
     renderParts(createElement, createConfig(), 'loading'),
   );
   expect((wait.match(/data-eye="/g) || []).length).toBe(2);
   expect(wait).toContain('data-wait-dot="2"');
+  expect(
+    sampleCharacter(createConfig({ shape: 'ghost' }), 'special', 1),
+  ).toEqual(sampleCharacter(createConfig({ shape: 'ghost' }), 'idle', 1));
 });
 it('renders the new facial details and authored reaction effects', () => {
   const detailed = renderToStaticMarkup(
@@ -110,7 +109,7 @@ it('renders the new facial details and authored reaction effects', () => {
         eyes: 'money',
         brows: 'arched',
         nose: 'muzzle',
-        mouth: 'tooth',
+        mouth: 'none',
       }),
       'idle',
     ),
@@ -118,7 +117,7 @@ it('renders the new facial details and authored reaction effects', () => {
   expect(detailed).toContain('data-eye-symbol="money"');
   expect(detailed).toContain('data-part="brows"');
   expect(detailed).toContain('data-part="nose"');
-  expect((detailed.match(/<rect/g) || []).length).toBeGreaterThanOrEqual(2);
+  expect(detailed).not.toContain('data-part="mouth"');
 
   for (const [state, effect] of [
     ['thinking', 'idea'],
@@ -130,16 +129,6 @@ it('renders the new facial details and authored reaction effects', () => {
     );
     expect(markup).toContain(`data-effect="${effect}"`);
   }
-  expect(
-    renderToStaticMarkup(
-      renderParts(createElement, createConfig({ shape: 'cloud' }), 'special'),
-    ),
-  ).toContain('data-effect="storm"');
-  expect(
-    renderToStaticMarkup(
-      renderParts(createElement, createConfig({ shape: 'drop' }), 'special'),
-    ),
-  ).toContain('data-effect="splash"');
 });
 it('rejects retired eye identifiers instead of silently changing the design', () => {
   expect(validateConfig(createConfig({ eyes: 'stars' }))).toContain(

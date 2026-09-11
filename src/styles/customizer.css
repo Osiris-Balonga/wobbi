@@ -215,6 +215,9 @@
 .details-button[aria-expanded='true'] .details-chevron {
   rotate: 180deg;
 }
+.choice-more .choice-grid {
+  padding-top: 7px;
+}
 .inline-color-control {
   margin-top: 12px;
   padding-top: 12px;
@@ -225,7 +228,8 @@
   border-radius: 10px;
   background: #f8f7fa;
 }
-.appearance-disclosure summary {
+.appearance-trigger {
+  width: 100%;
   min-height: 44px;
   display: flex;
   align-items: center;
@@ -236,15 +240,14 @@
   color: #5f566c;
   font-size: 12px;
   font-weight: 800;
-  list-style: none;
 }
-.appearance-disclosure summary::-webkit-details-marker {
-  display: none;
+.appearance-trigger:hover {
+  color: #4f3c78;
 }
-.appearance-disclosure summary svg {
+.appearance-trigger svg {
   transition: rotate 180ms cubic-bezier(0.2, 0, 0, 1);
 }
-.appearance-disclosure[open] summary svg {
+.appearance-trigger[aria-expanded='true'] svg {
   rotate: 180deg;
 }
 .appearance-content {
@@ -417,7 +420,7 @@
   color: #6040b7;
   background: var(--soft);
 }
-.details-disclosure {
+.details-motion .details-disclosure {
   padding-top: 22px;
 }
 .details-disclosure .detail-colors {

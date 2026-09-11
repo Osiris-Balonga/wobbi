@@ -219,6 +219,47 @@ it('keeps a beak static and never renders a second mouth for reactions', () => {
   );
   expect(document.querySelector('[data-part="mouth"]')).toBeNull();
 });
+it('reserves the muzzle mouth for the round surprise expression', () => {
+  const config = createConfig({ nose: 'muzzle', mouth: 'none' });
+  const { rerender } = render(
+    <Mascot config={config} state="idle" playing={false} />,
+  );
+  expect(document.querySelector('[data-part="mouth"]')).toBeNull();
+  rerender(<Mascot config={config} state="happy" playing={false} />);
+  expect(document.querySelector('[data-part="mouth"]')).toBeNull();
+  rerender(<Mascot config={config} state="singing" playing={false} />);
+  expect(document.querySelector('[data-part="mouth"]')).toBeNull();
+  rerender(<Mascot config={config} state="surprised" playing={false} />);
+  expect(
+    document.querySelector('[data-mouth-style="muzzle-surprise"]'),
+  ).toBeTruthy();
+});
+it('keeps oval glasses and blush inside their tuned face area', () => {
+  const { rerender } = render(
+    <Mascot
+      config={createConfig({ shape: 'oval', accessory: 'glasses' })}
+      playing={false}
+    />,
+  );
+  expect(
+    document.querySelector('[data-accessory-piece="glasses-arms"]'),
+  ).toBeNull();
+  rerender(
+    <Mascot
+      config={createConfig({ shape: 'oval', accessory: 'blush' })}
+      playing={false}
+    />,
+  );
+  expect(
+    document.querySelector('[data-accessory-piece="left-blush"]'),
+  ).toHaveAttribute('cx', '72');
+  expect(
+    document.querySelector('[data-accessory-piece="right-blush"]'),
+  ).toHaveAttribute('cx', '184');
+  expect(
+    document.querySelector('[data-accessory-piece="right-blush"]'),
+  ).toHaveAttribute('rx', '12');
+});
 it('does not start motion when paused or reduced motion is requested', () => {
   window.matchMedia = vi.fn(() => ({
     matches: true,

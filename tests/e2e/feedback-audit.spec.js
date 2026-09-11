@@ -24,7 +24,7 @@ test('keeps gaze inside preview and exposes the richer face controls', async ({
     eyes: 'glossy',
     brows: 'arched',
     nose: 'muzzle',
-    mouth: 'tooth',
+    mouth: 'none',
     head: 'round-ears',
     accessory: 'bandage',
   });
@@ -35,8 +35,8 @@ test('keeps gaze inside preview and exposes the richer face controls', async ({
   await expect(page.getByRole('heading', { name: 'Sourcils' })).toBeVisible();
   await page.getByRole('button', { name: /Accessoires & détails/ }).click();
   await expect(
-    page.locator('#character-details .choice-grid.columns-3'),
-  ).toHaveCount(2);
+    page.locator('#character-details .choice-section > h2'),
+  ).toHaveText(['Tête', 'Accessoires', 'Couleurs des détails']);
   await page
     .locator('.mascot-stage')
     .screenshot({ path: testInfo.outputPath('detailed-face.png') });
@@ -65,7 +65,7 @@ test('keeps gaze inside preview and exposes the richer face controls', async ({
     .toBeLessThan(1);
 });
 
-test('authors sleep, thought, song, splash and storm reactions', async ({
+test('authors the shared sleep, thought and song reactions', async ({
   page,
 }, testInfo) => {
   test.setTimeout(60000);
@@ -93,21 +93,12 @@ test('authors sleep, thought, song, splash and storm reactions', async ({
   await page.getByRole('button', { name: 'Tout voir' }).click();
   await page.getByRole('button', { name: 'Réaction : Chant' }).click();
   await expect(mascot(page).locator('[data-effect="singing"]')).toBeVisible();
-
-  await page.getByRole('button', { name: 'Réaction : Orage !' }).click();
-  await expect(mascot(page).locator('[data-effect="storm"]')).toBeVisible();
-  await page
-    .locator('.mascot-stage')
-    .screenshot({ path: testInfo.outputPath('cloud-storm.png') });
-
-  await page.getByRole('button', { name: 'Forme : Goutte' }).click();
-  await page
-    .getByRole('button', { name: 'Réaction : Grande éclaboussure' })
-    .click();
-  await expect(mascot(page).locator('[data-effect="splash"]')).toBeVisible();
-  await page
-    .locator('.mascot-stage')
-    .screenshot({ path: testInfo.outputPath('drop-splash.png') });
+  await expect(
+    page.getByRole('button', { name: /Réaction : Orage/ }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: /Réaction : Grande/ }),
+  ).toHaveCount(0);
 });
 
 test('renders the oval as a taller, narrower mascot silhouette', async ({
@@ -124,6 +115,49 @@ test('renders the oval as a taller, narrower mascot silhouette', async ({
     .locator('.mascot-hit [data-shape="oval"]')
     .boundingBox();
   expect(bounds.height).toBeGreaterThan(bounds.width * 1.2);
+});
+
+test('fits oval face accessories and excludes square ears', async ({
+  page,
+}) => {
+  await restore(page, {
+    shape: 'oval',
+    color: '#ffcc45',
+    accessory: 'blush',
+  });
+  const blushFits = await mascot(page).evaluate((svg) => {
+    const body = svg.querySelector('[data-shape]').getBBox();
+    return [...svg.querySelectorAll('[data-accessory-piece$="-blush"]')].every(
+      (cheek) => {
+        const box = cheek.getBBox();
+        return box.x >= body.x && box.x + box.width <= body.x + body.width;
+      },
+    );
+  });
+  expect(blushFits).toBe(true);
+
+  await page.getByRole('button', { name: /Accessoires & détails/ }).click();
+  await page
+    .getByRole('button', { name: 'Accessoires : Lunettes', exact: true })
+    .click();
+  await expect(
+    mascot(page).locator('[data-accessory-piece="glasses-arms"]'),
+  ).toHaveCount(0);
+
+  await page
+    .getByRole('button', { name: 'Forme : Carré arrondi', exact: true })
+    .click();
+  await page
+    .getByRole('button', { name: /Voir \d+ détails de tête de plus/ })
+    .click();
+  for (const label of [
+    'Oreilles de lapin',
+    'Oreilles de chat',
+    'Oreilles rondes',
+  ])
+    await expect(
+      page.getByRole('button', { name: `Tête : ${label}`, exact: true }),
+    ).toHaveCount(0);
 });
 
 test('reactions preserve intentionally absent facial features', async ({
@@ -144,4 +178,47 @@ test('reactions preserve intentionally absent facial features', async ({
   await page.getByRole('button', { name: 'Tout voir' }).click();
   await page.getByRole('button', { name: 'Réaction : Chant' }).click();
   await expect(mascot(page).locator('[data-part="mouth"]')).toHaveCount(0);
+});
+
+test('animates disclosure in both directions and keeps hidden controls inert', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const trigger = page.getByRole('button', {
+    name: 'Apparence du corps',
+    exact: true,
+  });
+  const panel = page.locator('.body-settings .disclosure-motion');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(panel).toHaveCSS('grid-template-rows', '0px');
+  const openingHeights = await panel.evaluate(async (element) => {
+    element.previousElementSibling.click();
+    const samples = [];
+    for (let frame = 0; frame < 20; frame += 1) {
+      await new Promise(requestAnimationFrame);
+      samples.push(Math.round(element.getBoundingClientRect().height));
+    }
+    return samples;
+  });
+  const openHeight = Math.max(...openingHeights);
+  expect(new Set(openingHeights).size).toBeGreaterThan(3);
+  expect(Math.min(...openingHeights)).toBeLessThan(openHeight);
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await expect(panel).not.toHaveAttribute('inert', '');
+
+  const closingHeights = await panel.evaluate(async (element) => {
+    element.previousElementSibling.click();
+    const samples = [];
+    for (let frame = 0; frame < 20; frame += 1) {
+      await new Promise(requestAnimationFrame);
+      samples.push(Math.round(element.getBoundingClientRect().height));
+    }
+    return samples;
+  });
+  expect(new Set(closingHeights).size).toBeGreaterThan(3);
+  expect(Math.max(...closingHeights)).toBeGreaterThan(0);
+  expect(Math.min(...closingHeights)).toBeLessThan(openHeight);
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(panel).toHaveCSS('grid-template-rows', '0px');
+  await expect(panel).toHaveAttribute('inert', '');
 });

@@ -182,11 +182,24 @@
   color: var(--muted);
   text-align: center;
 }
-.export-options details summary {
+.export-advanced-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 11px;
   color: var(--muted);
   cursor: pointer;
   padding: 10px 0;
+}
+.export-advanced-trigger svg {
+  transition: rotate 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+.export-advanced-trigger[aria-expanded='true'] svg {
+  rotate: 180deg;
+}
+.export-advanced .disclosure-motion-clip {
+  padding-top: 2px;
 }
 .export-help {
   font-size: 12px;

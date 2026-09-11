@@ -68,6 +68,15 @@
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 9px;
 }
+.reaction-more .reaction-grid {
+  padding-top: 9px;
+}
+.reaction-chevron {
+  transition: rotate 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+.text-button[aria-expanded='true'] .reaction-chevron {
+  rotate: 180deg;
+}
 .reaction-tile {
   position: relative;
   border-radius: 12px;

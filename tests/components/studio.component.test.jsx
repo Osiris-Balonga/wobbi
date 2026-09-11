@@ -23,6 +23,9 @@ it('opens with the unchanged full logo and its live brand mascot', () => {
     '--choice-surface': '#111218',
     '--choice-ink': '#ffffff',
   });
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Apparence du corps', exact: true }),
+  );
   expect(
     within(
       screen.getByRole('group', { name: 'Couleur du corps' }),
@@ -43,10 +46,16 @@ it('opens with the unchanged full logo and its live brand mascot', () => {
 it('previews white feature colours against the selected body colour', () => {
   render(<App />);
   fireEvent.click(
+    screen.getByRole('button', { name: 'Apparence du corps', exact: true }),
+  );
+  fireEvent.click(
     screen.getByRole('button', {
       name: 'Couleur du corps #ffcc45',
       exact: true,
     }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Teinte de la bouche', exact: true }),
   );
   fireEvent.click(
     screen.getByRole('button', {
@@ -67,6 +76,45 @@ it('previews white feature colours against the selected body colour', () => {
     '#ffffff',
   );
 });
+it('keeps each face preview focused on the feature being chosen', () => {
+  const { container } = render(<App />);
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Voir 3 nez de plus', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', {
+      name: 'Nez, museau ou bec : Museau',
+      exact: true,
+    }),
+  );
+  const eyeChoice = screen.getByRole('button', {
+    name: 'Yeux : Grands yeux',
+    exact: true,
+  });
+  expect(eyeChoice.querySelector('[data-part="nose"]')).toBeNull();
+  expect(eyeChoice.querySelector('[data-part="brows"]')).toBeNull();
+  expect(eyeChoice.querySelector('[data-part="mouth"]')).toBeNull();
+
+  const browChoice = screen.getByRole('button', {
+    name: 'Sourcils : Doux',
+    exact: true,
+  });
+  expect(browChoice.querySelector('[data-part="eyes"]')).toBeTruthy();
+  expect(browChoice.querySelector('[data-part="brows"]')).toBeTruthy();
+  expect(browChoice.querySelector('[data-part="nose"]')).toBeNull();
+  expect(browChoice.querySelector('[data-part="mouth"]')).toBeNull();
+
+  const mouthChoice = screen.getByRole('button', {
+    name: 'Bouche : Sourire',
+    exact: true,
+  });
+  expect(mouthChoice.querySelector('[data-part="mouth"]')).toBeTruthy();
+  expect(mouthChoice.querySelector('[data-part="nose"]')).toBeNull();
+  expect(mouthChoice.querySelector('[data-part="brows"]')).toBeNull();
+  expect(
+    container.querySelector('.mascot-hit [data-part="nose"]'),
+  ).toBeTruthy();
+});
 it('customizes illustrated parts and reverses an accessory edit', () => {
   const { container } = render(<App />);
   fireEvent.click(
@@ -79,6 +127,9 @@ it('customizes illustrated parts and reverses an accessory edit', () => {
     screen.getByRole('button', { name: 'Yeux : Points', exact: true }),
   );
   fireEvent.click(
+    screen.getByRole('button', { name: 'Apparence des yeux', exact: true }),
+  );
+  fireEvent.click(
     screen.getByRole('button', {
       name: 'Couleur des yeux #9270ff',
       exact: true,
@@ -86,6 +137,9 @@ it('customizes illustrated parts and reverses an accessory edit', () => {
   );
   fireEvent.click(
     screen.getByRole('button', { name: 'Bouche : Sourire', exact: true }),
+  );
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Teinte de la bouche', exact: true }),
   );
   fireEvent.click(
     screen.getByRole('button', {
@@ -186,6 +240,9 @@ it('expands and reduces the compact shape, eye and mouth grids', () => {
 });
 it('shows and applies both eye tones only for eye families that use pupils', () => {
   const { container } = render(<App />);
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Apparence des yeux', exact: true }),
+  );
   expect(
     screen.getByRole('group', { name: 'Couleur de l’œil' }),
   ).toBeInTheDocument();
@@ -214,29 +271,57 @@ it('shows and applies both eye tones only for eye families that use pupils', () 
     screen.queryByRole('group', { name: 'Couleur des pupilles' }),
   ).not.toBeInTheDocument();
 });
-it('keeps mouth choices visible but disabled when a beak is selected', () => {
+it.each(['Museau', 'Bec'])(
+  'keeps mouth choices visible but disabled with %s',
+  (label) => {
+    render(<App />);
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Bouche : Sourire', exact: true }),
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Voir 3 nez de plus', exact: true }),
+    );
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: `Nez, museau ou bec : ${label}`,
+        exact: true,
+      }),
+    );
+    expect(
+      screen.getByRole('button', { name: 'Bouche : Sans', exact: true }),
+    ).toBeEnabled();
+    expect(
+      screen.getByRole('button', { name: 'Bouche : Sans', exact: true }),
+    ).toHaveAttribute('aria-pressed', 'true');
+    expect(
+      screen.getByRole('button', { name: 'Bouche : Sourire', exact: true }),
+    ).toBeDisabled();
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Voir 5 bouches de plus',
+        exact: true,
+      }),
+    );
+    expect(
+      screen.getByRole('button', { name: 'Bouche : Crocs', exact: true }),
+    ).toBeDisabled();
+  },
+);
+it('exposes disclosure animation and accessibility state', () => {
   render(<App />);
-  fireEvent.click(
-    screen.getByRole('button', { name: 'Voir 3 nez de plus', exact: true }),
-  );
-  fireEvent.click(
-    screen.getByRole('button', {
-      name: 'Nez, museau ou bec : Bec',
-      exact: true,
-    }),
-  );
-  expect(
-    screen.getByRole('button', { name: 'Bouche : Sans', exact: true }),
-  ).toBeEnabled();
-  expect(
-    screen.getByRole('button', { name: 'Bouche : Sourire', exact: true }),
-  ).toBeDisabled();
-  fireEvent.click(
-    screen.getByRole('button', { name: 'Voir 5 bouches de plus', exact: true }),
-  );
-  expect(
-    screen.getByRole('button', { name: 'Bouche : Crocs', exact: true }),
-  ).toBeDisabled();
+  const trigger = screen.getByRole('button', {
+    name: 'Apparence du corps',
+    exact: true,
+  });
+  const panel = document.getElementById(trigger.getAttribute('aria-controls'));
+  expect(panel).toHaveAttribute('aria-hidden', 'true');
+  expect(panel).not.toHaveClass('is-open');
+  fireEvent.click(trigger);
+  expect(panel).toHaveClass('is-open');
+  expect(panel).toHaveAttribute('aria-hidden', 'false');
+  fireEvent.click(trigger);
+  expect(panel).not.toHaveClass('is-open');
+  expect(panel).toHaveAttribute('aria-hidden', 'true');
 });
 it('only offers details compatible with the selected silhouette', () => {
   render(<App />);
@@ -288,6 +373,9 @@ it('only offers details compatible with the selected silhouette', () => {
 });
 it('accepts an exact colour and opens an export choice without downloading', async () => {
   const { container } = render(<App />);
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Apparence du corps', exact: true }),
+  );
   fireEvent.click(
     screen.getByRole('button', {
       name: 'Couleur du corps personnalisée',

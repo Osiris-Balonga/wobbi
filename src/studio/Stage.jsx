@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Pause, Play, ChevronDown } from 'lucide-react';
 import { Mascot } from '../mascot/Mascot.jsx';
-import { specialLabel } from '../../packages/core/motion.js';
 import { reactionLabels } from './catalog.js';
+import { DisclosurePanel } from './Disclosure.jsx';
 export function Stage({
   config,
   reaction,
@@ -13,15 +13,36 @@ export function Stage({
 }) {
   const [more, setMore] = useState(false);
   const [hovered, setHovered] = useState(null);
-  const states = [
+  const primaryStates = [
     'idle',
     'happy',
     'thinking',
     'surprised',
     'sleeping',
-    'special',
-    ...(more ? ['loading', 'singing', 'sad', 'success', 'error'] : []),
+    'loading',
   ];
+  const extraStates = ['singing', 'sad', 'success', 'error'];
+  const renderReaction = (state) => (
+    <button
+      key={state}
+      className="reaction-tile"
+      aria-label={'Réaction : ' + reactionLabels[state]}
+      aria-pressed={reaction === state}
+      onPointerEnter={() => setHovered(state)}
+      onPointerLeave={() => setHovered(null)}
+      onFocus={() => setHovered(state)}
+      onBlur={() => setHovered(null)}
+      onClick={() => reactTo(state)}
+    >
+      <Mascot
+        config={config}
+        state={state}
+        size={80}
+        playing={hovered === state && playing}
+      />
+      <span>{reactionLabels[state]}</span>
+    </button>
+  );
   return (
     <main className="stage">
       <section
@@ -49,15 +70,7 @@ export function Stage({
           <button
             className="mascot-hit"
             aria-label="Faire réagir la mascotte"
-            onClick={() =>
-              reactTo(
-                ['ears', 'bunny-ears', 'round-ears', 'halo'].includes(
-                  config.head,
-                )
-                  ? 'special'
-                  : 'happy',
-              )
-            }
+            onClick={() => reactTo('happy')}
           >
             <Mascot
               config={config}
@@ -78,41 +91,16 @@ export function Stage({
             aria-expanded={more}
             onClick={() => setMore(!more)}
           >
-            {more ? 'Moins' : 'Tout voir'} <ChevronDown size={13} />
+            {more ? 'Moins' : 'Tout voir'}{' '}
+            <ChevronDown className="reaction-chevron" size={13} />
           </button>
         </div>
-        <div className="reaction-grid">
-          {states.map((state) => (
-            <button
-              key={state}
-              className="reaction-tile"
-              aria-label={
-                'Réaction : ' +
-                (state === 'special'
-                  ? specialLabel(config)
-                  : reactionLabels[state])
-              }
-              aria-pressed={reaction === state}
-              onPointerEnter={() => setHovered(state)}
-              onPointerLeave={() => setHovered(null)}
-              onFocus={() => setHovered(state)}
-              onBlur={() => setHovered(null)}
-              onClick={() => reactTo(state)}
-            >
-              <Mascot
-                config={config}
-                state={state}
-                size={80}
-                playing={hovered === state && playing}
-              />
-              <span>
-                {state === 'special'
-                  ? specialLabel(config)
-                  : reactionLabels[state]}
-              </span>
-            </button>
-          ))}
-        </div>
+        <div className="reaction-grid">{primaryStates.map(renderReaction)}</div>
+        <DisclosurePanel open={more} className="reaction-more">
+          <div className="reaction-grid reaction-grid-extra">
+            {extraStates.map(renderReaction)}
+          </div>
+        </DisclosurePanel>
       </section>
     </main>
   );

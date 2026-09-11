@@ -46,6 +46,9 @@ export const MOUTHS = [
   'pout',
   'fangs',
 ];
+const NO_MOUTH_NOSES = new Set(['muzzle', 'beak']);
+export const mouthsForNose = (nose) =>
+  NO_MOUTH_NOSES.has(nose) ? ['none'] : MOUTHS;
 export const DEPTHS = ['flat', 'soft', 'deep'];
 export const HEADS = [
   'none',
@@ -71,7 +74,7 @@ export const HEADS_BY_SHAPE = {
   wobbi: ['none', 'tuft', 'curl', 'round-ears', 'horns', 'halo'],
   ghost: ['none', 'tuft', 'curl', 'round-ears', 'horns', 'halo'],
   circle: HEADS,
-  'rounded-square': HEADS,
+  'rounded-square': ['none', 'tuft', 'curl', 'horns', 'halo'],
   cloud: ['none', 'tuft', 'curl', 'halo'],
   drop: ['none', 'halo'],
   oval: HEADS,
@@ -107,7 +110,7 @@ export const EASINGS = [
 ];
 export const PROJECT_VERSION = 2;
 export const resolveState = (state) =>
-  [...REACTIONS, 'special'].includes(state) ? state : 'idle';
+  REACTIONS.includes(state) ? state : 'idle';
 export function normalizeSlug(value) {
   return String(value)
     .normalize('NFD')
@@ -309,8 +312,8 @@ export function validateConfig(config) {
   if (!NOSES.includes(config.nose)) errors.push('Choose a supported nose.');
   if (!BROWS.includes(config.brows)) errors.push('Choose supported eyebrows.');
   if (!MOUTHS.includes(config.mouth)) errors.push('Choose a supported mouth.');
-  if (config.nose === 'beak' && config.mouth !== 'none')
-    errors.push('A beak cannot be combined with a mouth.');
+  if (!mouthsForNose(config.nose).includes(config.mouth))
+    errors.push('A muzzle or beak cannot be combined with a mouth.');
   if (!DEPTHS.includes(config.depth)) errors.push('Choose supported depth.');
   if (!HEADS.includes(config.head)) errors.push('Invalid head detail.');
   if (!ACCESSORIES.includes(config.accessory))
