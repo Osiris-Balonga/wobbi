@@ -1,0 +1,17 @@
+.wobbi-mascot {
+  display: block;
+  overflow: visible;
+  flex: none;
+}
+.wobbi-mascot [data-eye] {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.wobbi-mascot [data-part='body'] {
+  transition: opacity 160ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wobbi-mascot * {
+    transition: none !important;
+  }
+}

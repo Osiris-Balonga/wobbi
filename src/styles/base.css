@@ -1,0 +1,206 @@
+@import '@fontsource-variable/nunito';
+:root {
+  font-family: 'Nunito Variable', Nunito, system-ui, sans-serif;
+  color: #242032;
+  background: #fbfafc;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  --surface: #fff;
+  --ink: #242032;
+  --muted: #6e657b;
+  --purple: #7751e8;
+  --line: #eae7ef;
+  --soft: #f4f0ff;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button {
+  color: inherit;
+  cursor: pointer;
+}
+button {
+  border: 0;
+  background: none;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+button:not(:disabled):active {
+  scale: 0.96;
+}
+button {
+  transition:
+    background-color 160ms,
+    box-shadow 160ms,
+    scale 130ms,
+    color 160ms;
+}
+.disclosure-motion {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transform: translateY(-4px);
+  visibility: hidden;
+  transition:
+    grid-template-rows 220ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 140ms ease-in,
+    transform 180ms ease-in,
+    visibility 0s linear 220ms;
+}
+.disclosure-motion.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  transition:
+    grid-template-rows 240ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 180ms ease-out,
+    transform 220ms cubic-bezier(0.2, 0, 0, 1),
+    visibility 0s linear 0s;
+}
+.disclosure-motion-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #a184fa;
+  outline-offset: 3px;
+}
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #a184fa;
+  outline-offset: 2px;
+}
+h1,
+h2,
+p {
+  margin: 0;
+}
+h1,
+h2 {
+  text-wrap: balance;
+}
+h1 {
+  font-size: 26px;
+  line-height: 1.25;
+  font-weight: 900;
+  letter-spacing: -0.7px;
+}
+h2 {
+  font-size: 14px;
+  font-weight: 850;
+}
+p {
+  text-wrap: pretty;
+}
+.wobbi-app {
+  min-height: 100dvh;
+}
+@media (min-width: 761px) {
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
+  .wobbi-app {
+    height: 100dvh;
+    overflow: hidden;
+  }
+}
+.app-header {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 28px 0 15px;
+  gap: 24px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.brand-image {
+  height: 76px;
+  display: flex;
+  align-items: center;
+}
+.brand-image img {
+  object-fit: contain;
+  display: block;
+}
+.app-header nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.icon-button {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-button:hover {
+  background: var(--soft);
+}
+.primary {
+  background: var(--purple);
+  color: #fff;
+  border-radius: 10px;
+  padding: 12px 19px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-weight: 800;
+  font-size: 14px;
+  min-height: 44px;
+  box-shadow: 0 2px 3px #5633aa14;
+}
+.primary:hover {
+  background: #6540d2;
+}
+.export-button {
+  margin-left: 16px;
+  padding: 13px 22px;
+}
+.github-cta {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #fff;
+  background: #242032;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 850;
+  white-space: nowrap;
+  box-shadow: 0 2px 3px #2420321f;
+  transition:
+    background-color 160ms,
+    box-shadow 160ms,
+    scale 130ms;
+}
+.github-cta:hover {
+  background: #111218;
+  box-shadow: 0 4px 10px #24203224;
+}
+.github-cta:active {
+  scale: 0.96;
+}

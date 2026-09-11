@@ -1,0 +1,13 @@
+{
+  "name": "wobbi",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "wobbi": "./bin/wobbi.js"
+  },
+  "description": "Install validated Wobbi mascot exports from the local registry",
+  "engines": {
+    "node": ">=22"
+  }
+}

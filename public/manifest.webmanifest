@@ -1,0 +1,21 @@
+{
+  "id": "/",
+  "name": "Wobbi — Studio de mascottes interactives",
+  "short_name": "Wobbi",
+  "description": "Créez, animez et exportez votre mascotte interactive.",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7950ee",
+  "categories": ["design", "entertainment", "utilities"],
+  "icons": [
+    {
+      "src": "/brand/wobbi-symbol.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,326 @@
+@media (min-width: 1550px) {
+  .app-header {
+    padding-inline: max(28px, calc((100vw - 2200px) / 2 + 28px));
+  }
+  .creation-workspace {
+    width: 100%;
+    max-width: 2200px;
+    margin-inline: auto;
+    grid-template-columns: clamp(370px, 19vw, 420px) minmax(0, 1fr);
+  }
+  .customizer {
+    padding: 32px clamp(28px, 2vw, 38px);
+  }
+  .choice {
+    min-height: 89px;
+  }
+  .choice span {
+    font-size: 10px;
+  }
+  .intro {
+    margin-bottom: 31px;
+  }
+  .stage {
+    padding: 24px clamp(26px, 2vw, 40px) 30px;
+  }
+  .mascot-hit .wobbi-mascot {
+    width: clamp(410px, 22vw, 520px);
+    max-height: 52vh;
+  }
+  .choice-section {
+    margin-bottom: 28px;
+  }
+}
+@media (min-width: 1900px) {
+  .reaction-heading,
+  .reaction-grid {
+    width: min(100%, 1280px);
+    margin-inline: auto;
+  }
+  .reaction-grid {
+    grid-template-columns: repeat(6, minmax(160px, 205px));
+    justify-content: center;
+    gap: 10px;
+  }
+}
+@media (max-width: 1150px) {
+  .github-cta {
+    width: 42px;
+    padding: 0;
+  }
+  .github-cta span,
+  .github-cta .lucide-star {
+    display: none;
+  }
+  .creation-workspace {
+    grid-template-columns: 310px minmax(0, 1fr);
+  }
+  .customizer {
+    padding: 25px 18px;
+  }
+  .stage {
+    padding: 12px;
+  }
+  .mascot-hit .wobbi-mascot {
+    width: 295px;
+  }
+  .reactions {
+    padding: 20px 16px;
+  }
+  .reaction-grid {
+    gap: 6px;
+  }
+  .reaction-tile {
+    min-height: 95px;
+  }
+  .reaction-tile > span:last-child {
+    font-size: 10px;
+  }
+  .reaction-tile svg {
+    width: 66px;
+  }
+}
+@media (max-width: 760px) {
+  .github-cta {
+    display: none;
+  }
+  .app-header {
+    height: 68px;
+    padding: 0 14px 0 4px;
+    gap: 3px;
+  }
+  .brand-image {
+    height: 64px;
+  }
+  .brand-image img {
+    width: 145px;
+    height: 60px;
+  }
+  .app-header nav {
+    margin-left: auto;
+    gap: 1px;
+  }
+  .app-header .icon-button {
+    width: 40px;
+    height: 40px;
+  }
+  .export-button {
+    margin-left: 6px;
+    padding: 10px 12px;
+    font-size: 12px;
+    min-height: 40px;
+  }
+  .creation-workspace {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+  }
+  .stage {
+    order: 0;
+    padding: 10px 10px 0;
+    overflow: visible;
+  }
+  .mascot-stage {
+    min-height: 315px;
+  }
+  .mascot-center {
+    min-height: 195px;
+  }
+  .mascot-hit .wobbi-mascot {
+    width: 220px;
+    max-height: 240px;
+  }
+  .reactions {
+    padding: 17px 12px 12px;
+  }
+  .reaction-heading h2 {
+    font-size: 15px;
+  }
+  .reaction-grid {
+    display: flex;
+    overflow-x: auto;
+    padding: 9px 2px 4px;
+    margin-top: -6px;
+    scrollbar-width: thin;
+  }
+  .reaction-tile {
+    min-width: 78px;
+    min-height: 98px;
+  }
+  .customizer {
+    order: 1;
+    border: 0;
+    padding: 27px 24px;
+    overflow: visible;
+    margin: 10px;
+    border-radius: 16px;
+  }
+  .customizer h1 {
+    font-size: 24px;
+  }
+  .choice {
+    min-height: 88px;
+  }
+  .choice span {
+    font-size: 10px;
+  }
+  .choice-section {
+    margin-bottom: 24px;
+  }
+  .swatches {
+    gap: 13px;
+  }
+  .picker-layout {
+    grid-template-columns: minmax(0, 1fr) 110px;
+  }
+  .hex-controls {
+    max-width: 155px;
+  }
+  .export-dialog {
+    position: fixed;
+    inset: auto 0 0;
+    width: 100%;
+    max-width: none;
+    max-height: 94dvh;
+    margin: 0;
+    border-radius: 20px 20px 0 0;
+    animation: export-sheet-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .export-shell {
+    height: 94dvh;
+    max-height: 94dvh;
+  }
+  .dialog-heading {
+    padding: 20px 18px 16px;
+  }
+  .dialog-body {
+    padding: 16px 18px 22px;
+  }
+  .dialog-heading h2 {
+    font-size: 22px;
+  }
+  .dialog-heading p {
+    font-size: 12px;
+  }
+  .export-kinds {
+    gap: 8px;
+  }
+  .export-kind {
+    padding: 13px 10px;
+    gap: 8px;
+    min-height: 90px;
+  }
+  .export-kind > svg {
+    width: 23px;
+    height: 23px;
+  }
+  .export-kind strong {
+    font-size: 12px;
+  }
+  .export-kind small {
+    font-size: 10px;
+  }
+  .export-options {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 17px;
+  }
+  .export-preview {
+    display: none;
+  }
+  .dialog-note {
+    display: none;
+  }
+  .dialog-footer {
+    gap: 5px;
+    padding: 12px 18px max(12px, env(safe-area-inset-bottom));
+  }
+  .dialog-footer .primary {
+    font-size: 12px;
+    padding: 11px 13px;
+  }
+  .color-targets {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .code-delivery {
+    grid-template-columns: 1fr;
+  }
+  .code-file-tree {
+    overflow-x: auto;
+    border-right: 0;
+    border-bottom: 1px solid #ffffff18;
+  }
+  .code-file-tree ul {
+    display: flex;
+    gap: 4px;
+  }
+  .code-file-tree li {
+    flex: none;
+  }
+  .code-file-tree button {
+    width: auto;
+    max-width: 180px;
+  }
+  .code-preview pre {
+    max-height: 260px;
+  }
+}
+@keyframes export-sheet-in {
+  from {
+    transform: translateY(28px);
+    opacity: 0.7;
+  }
+}
+@media (max-width: 480px) {
+  .brand-image img {
+    width: 124px;
+  }
+  .export-button {
+    width: 40px;
+    padding: 0;
+  }
+  .export-button span {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+  button:not(:disabled):active {
+    scale: 1;
+  }
+  .export-dialog {
+    animation: none;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 761px) {
+  .creation-workspace {
+    min-height: 530px;
+  }
+  .mascot-stage {
+    min-height: 275px;
+  }
+  .mascot-center {
+    min-height: 180px;
+  }
+  .mascot-hit .wobbi-mascot {
+    width: 260px;
+    max-height: 260px;
+  }
+  .reactions {
+    padding: 17px 20px 12px;
+  }
+  .reaction-tile {
+    min-height: 94px;
+  }
+  .reaction-tile .wobbi-mascot {
+    width: 64px;
+  }
+}

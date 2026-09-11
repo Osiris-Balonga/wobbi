@@ -1,0 +1,59 @@
+{
+  "name": "wobbi-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/cli"
+  ],
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test:unit": "vitest run tests/unit",
+    "test:components": "vitest run tests/components",
+    "test:integration": "vitest run tests/integration",
+    "test:contracts": "vitest run tests/contracts",
+    "test:cli": "vitest run packages/cli/tests",
+    "test:a11y": "vitest run tests/a11y",
+    "test:e2e": "playwright test tests/e2e",
+    "test:visual": "playwright test tests/visual",
+    "test:production": "node scripts/test-production.mjs",
+    "test:all": "npm run test:unit && npm run test:components && npm run test:integration && npm run test:contracts && npm run test:cli && npm run test:a11y && npm run test:e2e && npm run test:visual",
+    "check": "npm run format:check && npm run lint && npm run test:unit && npm run test:components && npm run test:integration && npm run test:contracts && npm run test:cli && npm run test:a11y && npm run build",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "cli": "node packages/cli/bin/wobbi.js"
+  },
+  "engines": {
+    "node": "24.x"
+  },
+  "packageManager": "npm@11.16.0",
+  "dependencies": {
+    "@fontsource-variable/nunito": "^5.3.0",
+    "fflate": "^0.8.3",
+    "gifenc": "^1.0.3",
+    "lucide-react": "^1.44.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.10.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.6",
+    "globals": "^17.12.0",
+    "jest-axe": "^11.0.0",
+    "jsdom": "^30.0.1",
+    "prettier": "^3.9.6",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.0"
+  }
+}
