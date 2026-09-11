@@ -27,7 +27,7 @@
     "cli": "node packages/cli/bin/wobbi.js"
   },
   "engines": {
-    "node": ">=22"
+    "node": "24.x"
   },
   "packageManager": "npm@11.16.0",
   "dependencies": {

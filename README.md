@@ -4,7 +4,7 @@ Studio web local pour créer, animer et exporter une mascotte réutilisable. Le 
 
 ## Prérequis
 
-- Node.js 22
+- Node.js 24
 - npm 10 ou une version compatible avec le lockfile
 
 ## Démarrer
