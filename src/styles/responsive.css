@@ -1,9 +1,15 @@
 @media (min-width: 1550px) {
+  .app-header {
+    padding-inline: max(28px, calc((100vw - 2200px) / 2 + 28px));
+  }
   .creation-workspace {
-    grid-template-columns: 370px minmax(0, 1fr);
+    width: 100%;
+    max-width: 2200px;
+    margin-inline: auto;
+    grid-template-columns: clamp(370px, 19vw, 420px) minmax(0, 1fr);
   }
   .customizer {
-    padding: 32px;
+    padding: 32px clamp(28px, 2vw, 38px);
   }
   .choice {
     min-height: 89px;
@@ -15,16 +21,37 @@
     margin-bottom: 31px;
   }
   .stage {
-    padding: 20px 26px 25px;
+    padding: 24px clamp(26px, 2vw, 40px) 30px;
   }
   .mascot-hit .wobbi-mascot {
-    width: 440px;
+    width: clamp(410px, 22vw, 520px);
+    max-height: 52vh;
   }
   .choice-section {
     margin-bottom: 28px;
   }
 }
+@media (min-width: 1900px) {
+  .reaction-heading,
+  .reaction-grid {
+    width: min(100%, 1280px);
+    margin-inline: auto;
+  }
+  .reaction-grid {
+    grid-template-columns: repeat(6, minmax(160px, 205px));
+    justify-content: center;
+    gap: 10px;
+  }
+}
 @media (max-width: 1150px) {
+  .github-cta {
+    width: 42px;
+    padding: 0;
+  }
+  .github-cta span,
+  .github-cta .lucide-star {
+    display: none;
+  }
   .creation-workspace {
     grid-template-columns: 310px minmax(0, 1fr);
   }
@@ -54,6 +81,9 @@
   }
 }
 @media (max-width: 760px) {
+  .github-cta {
+    display: none;
+  }
   .app-header {
     height: 68px;
     padding: 0 14px 0 4px;
