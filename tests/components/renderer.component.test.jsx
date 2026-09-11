@@ -268,7 +268,7 @@ it('reserves the muzzle mouth for the round surprise expression', () => {
     document.querySelector('[data-mouth-style="muzzle-surprise"]'),
   ).toBeTruthy();
 });
-it('keeps oval glasses and blush inside their tuned face area', () => {
+it('keeps oval and egg accessories inside their tuned face areas', () => {
   const { rerender } = render(
     <Mascot
       config={createConfig({ shape: 'oval', accessory: 'glasses' })}
@@ -293,6 +293,30 @@ it('keeps oval glasses and blush inside their tuned face area', () => {
   expect(
     document.querySelector('[data-accessory-piece="right-blush"]'),
   ).toHaveAttribute('rx', '12');
+  rerender(
+    <Mascot
+      config={createConfig({ shape: 'egg', accessory: 'glasses' })}
+      playing={false}
+    />,
+  );
+  expect(
+    document.querySelector('[data-accessory-piece="glasses-arms"]'),
+  ).toBeNull();
+  rerender(
+    <Mascot
+      config={createConfig({ shape: 'egg', accessory: 'blush' })}
+      playing={false}
+    />,
+  );
+  expect(
+    document.querySelector('[data-accessory-piece="left-blush"]'),
+  ).toHaveAttribute('cx', '73');
+  expect(
+    document.querySelector('[data-accessory-piece="right-blush"]'),
+  ).toHaveAttribute('cx', '183');
+  expect(
+    document.querySelector('[data-accessory-piece="right-blush"]'),
+  ).toHaveAttribute('rx', '11');
 });
 it('does not start motion when paused or reduced motion is requested', () => {
   window.matchMedia = vi.fn(() => ({

@@ -18,7 +18,7 @@ Le studio est disponible sur http://127.0.0.1:5173.
 
 ## Fonctionnalités
 
-- 7 silhouettes, 12 regards, 8 bouches, détails de tête et accessoires compatibles avec chaque forme.
+- 8 silhouettes, 12 regards, 8 bouches, détails de tête et accessoires compatibles avec chaque forme.
 - Profondeur plate, douce ou profonde, couleurs indépendantes et fond personnalisable.
 - 10 réactions animées, suivi du regard, pause et respect de la préférence système de réduction des animations.
 - Historique de 40 modifications et sauvegarde locale.

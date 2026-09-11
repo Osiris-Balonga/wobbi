@@ -93,8 +93,12 @@ describe('mascot domain', () => {
     expect(SHAPES).not.toContain('flame');
     expect(SHAPES).not.toContain('triangle');
     expect(SHAPES).toContain('oval');
+    expect(SHAPES).toContain('egg');
     expect(headsForShape('drop')).not.toContain('ears');
     expect(headsForShape('oval')).toEqual(
+      expect.arrayContaining(['curl', 'bunny-ears']),
+    );
+    expect(headsForShape('egg')).toEqual(
       expect.arrayContaining(['curl', 'bunny-ears']),
     );
     expect(headsForShape('wobbi')).toEqual([

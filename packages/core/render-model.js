@@ -11,6 +11,7 @@ export const BODY_PATHS = {
     'M57 189 C13 169 21 124 49 112 C33 70 79 43 109 66 C142 25 194 52 195 87 C241 89 251 144 220 164 C235 211 177 234 149 213 C111 239 70 222 57 189Z',
   drop: 'M134 29 C141 85 217 104 217 162 C217 240 41 241 41 162 C41 105 109 85 134 29Z',
   oval: 'M204 130 C204 191 174 228 128 228 C82 228 52 191 52 130 C52 67 82 28 128 28 C174 28 204 67 204 130Z',
+  egg: 'M128 27 C160 27 180 62 191 104 C207 164 197 205 164 224 C144 236 112 236 92 224 C59 205 49 164 65 104 C76 62 96 27 128 27Z',
 };
 
 export const LASHED_EYES = ['sleepy', 'angry', 'wink'];
@@ -100,6 +101,18 @@ export const SHAPE_FITS = {
     glassesArms: false,
     cheekX: [72, 184],
     cheekRadiusX: 12,
+  },
+  egg: {
+    faceY: 6,
+    crownX: 128,
+    crownY: 41,
+    crownHalf: 49,
+    sideLeft: 57,
+    sideRight: 199,
+    templeHalf: 61,
+    glassesArms: false,
+    cheekX: [73, 183],
+    cheekRadiusX: 11,
   },
 };
 

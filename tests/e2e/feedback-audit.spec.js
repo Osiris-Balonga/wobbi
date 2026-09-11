@@ -101,18 +101,26 @@ test('authors the shared sleep, thought and song reactions', async ({
   ).toHaveCount(0);
 });
 
-test('renders the egg as a taller, narrower mascot silhouette', async ({
-  page,
-}) => {
+test('renders oval and egg as distinct tall silhouettes', async ({ page }) => {
   await page.goto('/');
   await page
-    .getByRole('button', { name: 'Voir 4 formes de plus', exact: true })
+    .getByRole('button', { name: 'Voir 5 formes de plus', exact: true })
     .click();
+  await page
+    .getByRole('button', { name: 'Forme : Ovale', exact: true })
+    .click();
+  const ovalPath = await page
+    .locator('.mascot-hit [data-shape="oval"]')
+    .getAttribute('d');
   await page.getByRole('button', { name: 'Forme : Œuf', exact: true }).click();
   const bounds = await page
-    .locator('.mascot-hit [data-shape="oval"]')
+    .locator('.mascot-hit [data-shape="egg"]')
     .boundingBox();
+  const eggPath = await page
+    .locator('.mascot-hit [data-shape="egg"]')
+    .getAttribute('d');
   expect(bounds.height).toBeGreaterThan(bounds.width * 1.2);
+  expect(eggPath).not.toBe(ovalPath);
 });
 
 test('keeps the shape grid compact and collapses an extra selection', async ({
@@ -128,8 +136,11 @@ test('keeps the shape grid compact and collapses an extra selection', async ({
     page.getByRole('button', { name: 'Forme : Triangle', exact: true }),
   ).toHaveCount(0);
   await page
-    .getByRole('button', { name: 'Voir 4 formes de plus', exact: true })
+    .getByRole('button', { name: 'Voir 5 formes de plus', exact: true })
     .click();
+  await expect(
+    page.getByRole('button', { name: 'Forme : Ovale', exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByRole('button', { name: 'Forme : Œuf', exact: true }),
   ).toBeVisible();
@@ -232,6 +243,12 @@ test('fits oval face accessories and excludes square ears', async ({
   await page
     .getByRole('button', { name: 'Accessoires : Lunettes', exact: true })
     .click();
+  await expect(
+    mascot(page).locator('[data-accessory-piece="glasses-arms"]'),
+  ).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Forme : Œuf', exact: true }).click();
+  await expect(mascot(page).locator('[data-shape="egg"]')).toBeVisible();
   await expect(
     mascot(page).locator('[data-accessory-piece="glasses-arms"]'),
   ).toHaveCount(0);

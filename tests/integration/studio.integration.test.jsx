@@ -5,7 +5,7 @@ import { createConfig } from '../../packages/core/config.js';
 it('persists the current creation and reopens it without replacing the brand logo', () => {
   const first = render(<App />);
   fireEvent.click(
-    screen.getByRole('button', { name: 'Voir 4 formes de plus', exact: true }),
+    screen.getByRole('button', { name: 'Voir 5 formes de plus', exact: true }),
   );
   fireEvent.click(
     screen.getByRole('button', { name: 'Forme : Goutte', exact: true }),
@@ -69,7 +69,7 @@ it('rejects unsupported project fields before changing the creation', async () =
 it('restores the brand preset through an undoable action', () => {
   render(<App />);
   fireEvent.click(
-    screen.getByRole('button', { name: 'Voir 4 formes de plus', exact: true }),
+    screen.getByRole('button', { name: 'Voir 5 formes de plus', exact: true }),
   );
   fireEvent.click(
     screen.getByRole('button', { name: 'Forme : Nuage', exact: true }),

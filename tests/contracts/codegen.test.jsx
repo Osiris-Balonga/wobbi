@@ -38,7 +38,7 @@ it('exports every selected setting and renders deep volume in React', async () =
   const config = createConfig({
     componentName: 'MyBuddy',
     size: 180,
-    shape: 'oval',
+    shape: 'egg',
     eyes: 'sleepy',
     nose: 'round',
     brows: 'worried',
@@ -118,6 +118,7 @@ it('exports every selected setting and renders deep volume in React', async () =
     expect(html).toContain('width="128"');
     expect(html).toContain('data-part="body-depth"');
     expect(html).toContain('data-depth="deep"');
+    expect(html).toContain('data-shape="egg"');
     expect(html).not.toMatch(/NaN|undefined/);
   }
   expect(await readFile(path.join(dir, 'MyBuddy.css'), 'utf8')).toContain(

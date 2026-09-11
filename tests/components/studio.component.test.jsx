@@ -204,8 +204,11 @@ it('expands and reduces the compact shape, eye and mouth grids', () => {
     }),
   ).not.toBeInTheDocument();
   fireEvent.click(
-    screen.getByRole('button', { name: 'Voir 4 formes de plus', exact: true }),
+    screen.getByRole('button', { name: 'Voir 5 formes de plus', exact: true }),
   );
+  expect(
+    screen.getByRole('button', { name: 'Forme : Ovale', exact: true }),
+  ).toBeInTheDocument();
   expect(
     screen.getByRole('button', { name: 'Forme : Œuf', exact: true }),
   ).toBeInTheDocument();
@@ -417,7 +420,7 @@ it('only offers details compatible with the selected silhouette', () => {
     screen.getByRole('button', { name: 'Accessoires : Casque', exact: true }),
   );
   fireEvent.click(
-    screen.getByRole('button', { name: 'Voir 4 formes de plus', exact: true }),
+    screen.getByRole('button', { name: 'Voir 5 formes de plus', exact: true }),
   );
   fireEvent.click(
     screen.getByRole('button', {

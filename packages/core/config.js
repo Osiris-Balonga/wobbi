@@ -18,6 +18,7 @@ export const SHAPES = [
   'cloud',
   'drop',
   'oval',
+  'egg',
 ];
 export const EYES = [
   'classic',
@@ -78,6 +79,7 @@ export const HEADS_BY_SHAPE = {
   cloud: ['none', 'tuft', 'curl', 'halo'],
   drop: ['none', 'halo'],
   oval: HEADS,
+  egg: HEADS,
 };
 export const ACCESSORIES_BY_SHAPE = {
   wobbi: ACCESSORIES,
@@ -87,6 +89,7 @@ export const ACCESSORIES_BY_SHAPE = {
   cloud: ACCESSORIES,
   drop: ACCESSORIES,
   oval: ACCESSORIES,
+  egg: ACCESSORIES,
 };
 export const headsForShape = (shape) => HEADS_BY_SHAPE[shape] || ['none'];
 export const accessoriesForShape = (shape) =>

@@ -5,7 +5,8 @@ export const shapeLabels = {
   'rounded-square': 'Carré arrondi',
   cloud: 'Nuage',
   drop: 'Goutte',
-  oval: 'Œuf',
+  oval: 'Ovale',
+  egg: 'Œuf',
 };
 export const eyeLabels = {
   classic: 'Grands yeux',
