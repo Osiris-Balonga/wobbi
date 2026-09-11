@@ -40,11 +40,17 @@ it('opens with the unchanged full logo and its live brand mascot', () => {
   expect(
     within(studioActions).getByRole('button', { name: 'Repartir de Wobbi' }),
   ).toBeInTheDocument();
+  const githubLink = within(studioActions).getByRole('link', {
+    name: 'Laisser une étoile au dépôt Wobbi sur GitHub',
+  });
   expect(
     within(studioActions).getByRole('link', {
       name: 'Laisser une étoile au dépôt Wobbi sur GitHub',
     }),
   ).toHaveAttribute('href', 'https://github.com/Osiris-Balonga/wobbi');
+  expect(
+    screen.getByRole('button', { name: 'Exporter', exact: true }).nextSibling,
+  ).toBe(githubLink);
   expect(screen.queryByText('Un petit personnage. Tout vous.')).toBeNull();
   expect(screen.queryByText('Ouvrir un projet')).toBeNull();
 });

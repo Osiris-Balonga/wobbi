@@ -174,6 +174,15 @@ export default function App() {
           >
             <RotateCcw size={20} />
           </button>
+          <button
+            className="primary export-button"
+            aria-label="Exporter"
+            onFocus={loadExportDialog}
+            onPointerEnter={loadExportDialog}
+            onClick={() => setExporting(true)}
+          >
+            <Upload size={18} /> <span>Exporter</span>
+          </button>
           <a
             className="github-cta"
             href="https://github.com/Osiris-Balonga/wobbi"
@@ -186,15 +195,6 @@ export default function App() {
             <span>Une étoile</span>
             <Star size={15} aria-hidden="true" />
           </a>
-          <button
-            className="primary export-button"
-            aria-label="Exporter"
-            onFocus={loadExportDialog}
-            onPointerEnter={loadExportDialog}
-            onClick={() => setExporting(true)}
-          >
-            <Upload size={18} /> <span>Exporter</span>
-          </button>
         </nav>
       </header>
       <div className="creation-workspace">
