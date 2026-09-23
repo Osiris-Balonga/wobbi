@@ -17,6 +17,7 @@ import {
 } from '../packages/core/config.js';
 import { reactionDuration } from '../packages/core/motion.js';
 import './studio.css';
+import { useLocale } from './i18n/index.js';
 
 const loadExportDialog = () => import('./export/ExportDialog.jsx');
 const ExportDialog = lazy(() =>
@@ -38,6 +39,7 @@ function GitHubMark({ size = 19 }) {
 }
 
 export default function App() {
+  const { locale, setLocale, t } = useLocale();
   const studio = useStudio();
   const [details, setDetails] = useState(false),
     [exporting, setExporting] = useState(false);
@@ -85,8 +87,7 @@ export default function App() {
     e.target.value = '';
     if (!file) return;
     try {
-      if (file.size > 1000000)
-        throw new Error('Ce fichier est trop volumineux.');
+      if (file.size > 1000000) throw new Error(t('This file is too large.'));
       const input = JSON.parse(await file.text());
       if (
         !input ||
@@ -94,18 +95,18 @@ export default function App() {
         Array.isArray(input) ||
         input.version !== PROJECT_VERSION
       )
-        throw new Error('Choisissez un projet Wobbi valide.');
+        throw new Error(t('Choose a valid Wobbi project.'));
       if (validateConfig(input).length)
-        throw new Error('Ce projet contient des valeurs invalides.');
+        throw new Error(t('This project contains invalid values.'));
       const config = createConfig(input);
       clearSequence();
       setReaction('idle');
       studio.setConfig(config);
-      notify('Votre création est prête.');
+      notify(t('Your creation is ready.'));
     } catch (err) {
       notify(
         err instanceof SyntaxError
-          ? 'Ce fichier n’est pas un projet JSON valide.'
+          ? t('This file is not a valid JSON project.')
           : err.message,
       );
     }
@@ -116,7 +117,7 @@ export default function App() {
         <a
           href="#"
           className="brand-image"
-          aria-label="Wobbi — accueil"
+          aria-label={t('Wobbi — home')}
           onClick={(e) => {
             e.preventDefault();
             setDetails(false);
@@ -129,10 +130,21 @@ export default function App() {
             height="70"
           />
         </a>
-        <nav aria-label="Actions du studio">
+        <nav aria-label={t('Studio actions')}>
+          <label className="language-choice">
+            <span className="sr-only">{t('Language')}</span>
+            <select
+              aria-label={t('Language')}
+              value={locale}
+              onChange={(event) => setLocale(event.target.value)}
+            >
+              <option value="en">EN</option>
+              <option value="fr">FR</option>
+            </select>
+          </label>
           <button
             className="icon-button"
-            aria-label="Annuler la modification"
+            aria-label={t('Undo change')}
             disabled={!studio.canUndo}
             onClick={() => {
               clearSequence();
@@ -143,7 +155,7 @@ export default function App() {
           </button>
           <button
             className="icon-button"
-            aria-label="Rétablir la modification"
+            aria-label={t('Redo change')}
             disabled={!studio.canRedo}
             onClick={() => {
               clearSequence();
@@ -154,45 +166,45 @@ export default function App() {
           </button>
           <button
             className="icon-button"
-            aria-label="Importer un projet"
-            title="Importer un projet"
+            aria-label={t('Import a project')}
+            title={t('Import a project')}
             onClick={() => importRef.current?.click()}
           >
             <FolderOpen size={20} />
           </button>
           <button
             className="icon-button"
-            aria-label="Repartir de Wobbi"
-            title="Repartir de Wobbi"
+            aria-label={t('Reset to Wobbi')}
+            title={t('Reset to Wobbi')}
             onClick={() => {
               clearSequence();
               setReaction('idle');
               studio.setConfig(createConfig());
               setDetails(false);
-              notify('Voici Wobbi, comme dans le logo.');
+              notify(t('Here is Wobbi, as seen in the logo.'));
             }}
           >
             <RotateCcw size={20} />
           </button>
           <button
             className="primary export-button"
-            aria-label="Exporter"
+            aria-label={t('Export')}
             onFocus={loadExportDialog}
             onPointerEnter={loadExportDialog}
             onClick={() => setExporting(true)}
           >
-            <Upload size={18} /> <span>Exporter</span>
+            <Upload size={18} /> <span>{t('Export')}</span>
           </button>
           <a
             className="github-cta"
             href="https://github.com/Osiris-Balonga/wobbi"
             target="_blank"
             rel="noreferrer"
-            aria-label="Laisser une étoile au dépôt Wobbi sur GitHub"
-            title="Soutenir Wobbi sur GitHub"
+            aria-label={t('Star Wobbi on GitHub')}
+            title={t('Support Wobbi on GitHub')}
           >
             <GitHubMark />
-            <span>Une étoile</span>
+            <span>{t('Star')}</span>
             <Star size={15} aria-hidden="true" />
           </a>
         </nav>
@@ -221,13 +233,13 @@ export default function App() {
         type="file"
         ref={importRef}
         accept=".json,application/json"
-        aria-label="Importer un projet Wobbi"
+        aria-label={t('Import a Wobbi project')}
         onChange={importProject}
       />
       <Suspense
         fallback={
           <div className="notification visible" role="status">
-            Préparation de l’export…
+            {t('Preparing the export…')}
           </div>
         }
       >
@@ -245,7 +257,7 @@ export default function App() {
         }
         role="status"
       >
-        {notice || studio.storageError}
+        {notice || (studio.storageError && t(studio.storageError))}
       </div>
     </div>
   );

@@ -24,7 +24,8 @@ import {
 } from '../../packages/codegen/browser.js';
 import { Mascot } from '../mascot/Mascot.jsx';
 import { DisclosurePanel } from '../studio/Disclosure.jsx';
-import { reactionLabels } from '../studio/catalog.js';
+import { catalog } from '../studio/catalog.js';
+import { useLocale } from '../i18n/index.js';
 import { downloadBlob } from './download.js';
 import {
   createSvg,
@@ -35,10 +36,10 @@ import {
 } from './media.js';
 
 const kinds = [
-  ['code', 'Site ou application', 'Une mascotte interactive', Code2],
-  ['image', 'Image', 'PNG ou SVG', Image],
-  ['animation', 'Animation', 'GIF ou vidéo', Play],
-  ['project', 'Projet Wobbi', 'Pour la modifier plus tard', FilePenLine],
+  ['code', 'Website or app', 'An interactive mascot', Code2],
+  ['image', 'Image', 'PNG or SVG', Image],
+  ['animation', 'Animation', 'GIF or video', Play],
+  ['project', 'Wobbi project', 'Edit it again later', FilePenLine],
 ];
 
 function componentName(name) {
@@ -52,7 +53,7 @@ function componentName(name) {
     .join('');
   return /^[A-Z]/.test(normalized)
     ? normalized
-    : 'Mon' + (normalized || 'Wobbi');
+    : 'My' + (normalized || 'Wobbi');
 }
 
 function archive(files) {
@@ -96,6 +97,8 @@ function fileIcon(filename) {
 }
 
 export function ExportDialog({ config, onClose, notify }) {
+  const { locale, t } = useLocale();
+  const { reactionLabels } = catalog(locale);
   const dialog = useRef(null);
   const abort = useRef(null);
   const copyTimer = useRef(null);
@@ -124,16 +127,27 @@ export function ExportDialog({ config, onClose, notify }) {
           folder,
           framework: format === 'vue' ? 'vue' : 'react',
         },
+        accessibility: {
+          ...config.accessibility,
+          label: ['Wobbi mascot', 'Mascotte Wobbi'].includes(
+            config.accessibility.label,
+          )
+            ? locale === 'fr'
+              ? 'Mascotte Wobbi'
+              : 'Wobbi mascot'
+            : config.accessibility.label,
+        },
       }),
-    [config, folder, format, name],
+    [config, folder, format, name, locale],
   );
   const configErrors = validateConfig(exportedConfig);
   const codeFiles = useMemo(() => {
     if (kind !== 'code' || configErrors.length) return {};
-    if (format === 'javascript') return generateVanillaFiles(exportedConfig);
+    if (format === 'javascript')
+      return generateVanillaFiles(exportedConfig, locale);
     if (format === 'vue') return generateVueFiles(exportedConfig);
     return generateFiles(exportedConfig);
-  }, [exportedConfig, format, kind, configErrors.length]);
+  }, [exportedConfig, format, kind, configErrors.length, locale]);
   const filenames = Object.keys(codeFiles);
   const activeFile = filenames.includes(selectedFile)
     ? selectedFile
@@ -169,13 +183,11 @@ export function ExportDialog({ config, onClose, notify }) {
     try {
       await copyText(codeFiles[activeFile]);
       setCopiedFile(activeFile);
-      notify(`${activeFile} copié.`);
+      notify(t('{file} copied.', { file: activeFile }));
       window.clearTimeout(copyTimer.current);
       copyTimer.current = window.setTimeout(() => setCopiedFile(''), 1600);
     } catch {
-      setError(
-        'Impossible de copier ce fichier. Vous pouvez sélectionner son contenu.',
-      );
+      setError(t('Could not copy this file. You can select its contents.'));
     }
   }
 
@@ -187,7 +199,7 @@ export function ExportDialog({ config, onClose, notify }) {
     try {
       if (configErrors.length)
         throw new Error(
-          'Vérifiez le nom du composant et le dossier dans les options avancées.',
+          t('Check the component name and folder in advanced options.'),
         );
       const filename = exportedConfig.slug;
       const transparent = exportedConfig.background.type === 'transparent';
@@ -232,12 +244,12 @@ export function ExportDialog({ config, onClose, notify }) {
       downloadBlob(blob, `${filename}.${extension}`);
       notify(
         kind === 'project'
-          ? 'Projet enregistré. Vous pourrez le rouvrir dans Wobbi.'
-          : 'Votre mascotte est prête !',
+          ? t('Project saved. You can reopen it in Wobbi.')
+          : t('Your mascot is ready!'),
       );
     } catch (caught) {
       if (caught.name !== 'AbortError')
-        setError(caught.message || 'L’export a échoué. Vous pouvez réessayer.');
+        setError(t(caught.message || 'Export failed. Please try again.'));
     } finally {
       setBusy(false);
     }
@@ -257,14 +269,18 @@ export function ExportDialog({ config, onClose, notify }) {
           ]
         : [
             ['gif', 'GIF'],
-            ['webm', 'Vidéo · WebM'],
+            ['webm', t('Video · WebM')],
           ];
   const deliveryHelp = {
-    react:
-      'Composant React réutilisable, également compatible avec un composant client Next.js.',
-    vue: 'Composant Vue réutilisable et modules associés, prêts à importer dans une application existante.',
-    javascript:
-      'Démo HTML autonome : ouvrez index.html directement, même sans serveur local.',
+    react: t(
+      'Reusable React component, also compatible with Next.js client components.',
+    ),
+    vue: t(
+      'Reusable Vue component and modules, ready to import into an existing app.',
+    ),
+    javascript: t(
+      'Standalone HTML demo: open index.html directly, without a local server.',
+    ),
   }[format];
 
   return (
@@ -283,13 +299,13 @@ export function ExportDialog({ config, onClose, notify }) {
       <div className="export-shell">
         <header className="dialog-heading">
           <div>
-            <h2 id="export-title">Exporter votre mascotte</h2>
-            <p>Choisissez comment vous voulez l’utiliser.</p>
+            <h2 id="export-title">{t('Export your mascot')}</h2>
+            <p>{t('Choose how you want to use it.')}</p>
           </div>
           <button
             type="button"
             className="icon-button"
-            aria-label="Fermer l’export"
+            aria-label={t('Close export dialog')}
             onClick={close}
           >
             <X size={21} />
@@ -309,8 +325,8 @@ export function ExportDialog({ config, onClose, notify }) {
               >
                 <Icon />
                 <span>
-                  <strong>{label}</strong>
-                  <small>{help}</small>
+                  <strong>{t(label)}</strong>
+                  <small>{t(help)}</small>
                 </span>
                 {kind === id && <Check className="selected-check" />}
               </button>
@@ -341,7 +357,7 @@ export function ExportDialog({ config, onClose, notify }) {
               {kind === 'code' ? (
                 <>
                   <label>
-                    Nom du composant
+                    {t('Component name')}
                     <input
                       value={name}
                       disabled={busy}
@@ -358,7 +374,7 @@ export function ExportDialog({ config, onClose, notify }) {
                       aria-controls="export-advanced-options"
                       onClick={() => setAdvanced((value) => !value)}
                     >
-                      Options avancées
+                      {t('Advanced options')}
                       <ChevronDown size={14} aria-hidden="true" />
                     </button>
                     <DisclosurePanel
@@ -366,7 +382,7 @@ export function ExportDialog({ config, onClose, notify }) {
                       id="export-advanced-options"
                     >
                       <label>
-                        Dossier conseillé
+                        {t('Suggested folder')}
                         <input
                           value={folder}
                           disabled={busy}
@@ -378,13 +394,16 @@ export function ExportDialog({ config, onClose, notify }) {
                 </>
               ) : kind === 'project' ? (
                 <p className="export-help">
-                  Conservez les formes, couleurs, accessoires et réactions de
-                  votre création pour la reprendre plus tard dans Wobbi.
+                  {t(
+                    'Save the shapes, colors, accessories, and reactions of your creation to continue editing it in Wobbi later.',
+                  )}
                 </p>
               ) : (
                 <>
                   <label>
-                    {kind === 'image' ? 'Expression' : 'Réaction à enregistrer'}
+                    {kind === 'image'
+                      ? t('Expression')
+                      : t('Reaction to record')}
                     <select
                       value={state}
                       disabled={busy}
@@ -417,11 +436,19 @@ export function ExportDialog({ config, onClose, notify }) {
                   <p className="export-help">
                     {kind === 'image'
                       ? config.background.type === 'transparent'
-                        ? 'Le fichier conserve le fond transparent choisi dans le studio.'
-                        : 'Le fichier conserve la couleur de fond choisie dans le studio.'
+                        ? t(
+                            'The file keeps the transparent background selected in the studio.',
+                          )
+                        : t(
+                            'The file keeps the background color selected in the studio.',
+                          )
                       : config.background.type === 'transparent'
-                        ? 'Séquence de 3,6 secondes sur fond transparent. Le GIF se répète.'
-                        : 'Séquence de 3,6 secondes avec le fond du studio. Le GIF se répète.'}
+                        ? t(
+                            'A 3.6-second sequence on a transparent background. The GIF loops.',
+                          )
+                        : t(
+                            'A 3.6-second sequence with the studio background. The GIF loops.',
+                          )}
                   </p>
                 </>
               )}
@@ -447,19 +474,19 @@ export function ExportDialog({ config, onClose, notify }) {
                 />
                 <p>
                   {kind === 'project'
-                    ? 'Votre création, rééditable'
+                    ? t('Your editable creation')
                     : kind === 'image'
-                      ? 'La pose sélectionnée'
-                      : 'Aperçu de la réaction'}
+                      ? t('Selected pose')
+                      : t('Reaction preview')}
                 </p>
               </div>
             )}
           </div>
 
           {kind === 'code' && filenames.length > 0 && (
-            <section className="code-delivery" aria-label="Code exporté">
-              <nav className="code-file-tree" aria-label="Fichiers exportés">
-                <h3>Fichiers</h3>
+            <section className="code-delivery" aria-label={t('Exported code')}>
+              <nav className="code-file-tree" aria-label={t('Exported files')}>
+                <h3>{t('Files')}</h3>
                 <ul>
                   {filenames.map((filename) => (
                     <li key={filename}>
@@ -492,7 +519,7 @@ export function ExportDialog({ config, onClose, notify }) {
                     ) : (
                       <Copy size={15} aria-hidden="true" />
                     )}
-                    {copiedFile === activeFile ? 'Copié' : 'Copier'}
+                    {copiedFile === activeFile ? t('Copied') : t('Copy')}
                   </button>
                 </div>
                 <pre tabIndex="0">
@@ -514,15 +541,17 @@ export function ExportDialog({ config, onClose, notify }) {
             {busy && (
               <progress
                 className="export-progress"
-                aria-label="Progression de l’export"
+                aria-label={t('Export progress')}
                 value={progress}
                 max="1"
               />
             )}
-            <span className="dialog-note">Votre création vous appartient.</span>
+            <span className="dialog-note">
+              {t('Your creation belongs to you.')}
+            </span>
           </div>
           <button type="button" className="text-button" onClick={close}>
-            Annuler
+            {t('Cancel')}
           </button>
           <button
             type="button"
@@ -532,12 +561,12 @@ export function ExportDialog({ config, onClose, notify }) {
           >
             <Download size={17} />
             {busy
-              ? 'Préparation…'
+              ? t('Preparing…')
               : {
-                  code: 'Télécharger les fichiers',
-                  image: 'Télécharger l’image',
-                  animation: 'Télécharger l’animation',
-                  project: 'Enregistrer le projet',
+                  code: t('Download files'),
+                  image: t('Download image'),
+                  animation: t('Download animation'),
+                  project: t('Save project'),
                 }[kind]}
           </button>
         </footer>

@@ -25,7 +25,7 @@ describe('public discovery metadata', () => {
     expect(JSON.parse(jsonLd[1])).toMatchObject({
       '@type': 'WebApplication',
       name: 'Wobbi',
-      inLanguage: 'fr',
+      inLanguage: 'en',
       url: 'https://wobbi.vercel.app/',
     });
   });

@@ -15,15 +15,8 @@ import { LASHED_EYES } from '../../packages/core/render-model.js';
 import { ChoiceGrid } from './ChoiceGrid.jsx';
 import { ColorPicker, Swatches } from './ColorPicker.jsx';
 import { DisclosurePanel } from './Disclosure.jsx';
-import {
-  accessoryLabels,
-  eyeLabels,
-  noseLabels,
-  browLabels,
-  headLabels,
-  mouthLabels,
-  shapeLabels,
-} from './catalog.js';
+import { catalog } from './catalog.js';
+import { useLocale } from '../i18n/index.js';
 
 function InlineColorControl({
   colorKey,
@@ -108,6 +101,16 @@ export function CustomizePanel({
   details,
   setDetails,
 }) {
+  const { locale, t } = useLocale();
+  const {
+    accessoryLabels,
+    eyeLabels,
+    noseLabels,
+    browLabels,
+    headLabels,
+    mouthLabels,
+    shapeLabels,
+  } = catalog(locale);
   const [target, setTarget] = useState(null);
   const hasPupils = [
     'classic',
@@ -122,18 +125,18 @@ export function CustomizePanel({
   const availableHeads = headsForShape(config.shape);
   const availableAccessories = accessoriesForShape(config.shape);
   const labels = {
-    color: 'Corps',
-    eyeColor: 'Yeux',
-    pupilColor: 'Pupilles',
-    lashColor: 'Cils',
-    mouthColor: 'Bouche',
-    noseColor: 'Nez',
-    browColor: 'Sourcils',
-    outlineColor: 'Contour du corps',
-    eyeOutlineColor: 'Contour des yeux',
-    accessoryColor: 'Accessoire',
-    accentColor: 'Accent',
-    background: 'Fond',
+    color: t('Body'),
+    eyeColor: t('Eyes'),
+    pupilColor: t('Pupils'),
+    lashColor: t('Lashes'),
+    mouthColor: t('Mouth'),
+    noseColor: t('Nose'),
+    browColor: t('Eyebrows'),
+    outlineColor: t('Body outline'),
+    eyeOutlineColor: t('Eye outline'),
+    accessoryColor: t('Accessory'),
+    accentColor: t('Accent'),
+    background: t('Background'),
   };
   const changeColor = (key, value) =>
     patch(
@@ -156,15 +159,16 @@ export function CustomizePanel({
   ];
 
   return (
-    <aside className="customizer" aria-label="Personnalisation">
+    <aside className="customizer" aria-label={t('Customize your mascot')}>
       <h1>
-        À vous de jouer<span className="violet-dot">.</span>
+        {t('Make it yours')}
+        <span className="violet-dot">.</span>
       </h1>
-      <p className="intro">Quelques choix, votre personnage.</p>
+      <p className="intro">{t('A few choices, your character.')}</p>
       <label className="mascot-name-field">
-        <span>Nom</span>
+        <span>{t('Name')}</span>
         <input
-          aria-label="Nom de la mascotte"
+          aria-label={t('Mascot name')}
           maxLength={40}
           value={config.name}
           onChange={(event) => patch({ name: event.target.value })}
@@ -172,14 +176,14 @@ export function CustomizePanel({
       </label>
 
       <ChoiceGrid
-        title="Forme"
+        title={t('Shape')}
         field="shape"
         values={SHAPES}
         labels={shapeLabels}
         config={config}
         columns={3}
         collapsedCount={3}
-        itemLabel="formes"
+        itemLabel={t('shapes')}
         onChange={(shape) =>
           patch({
             shape,
@@ -194,13 +198,13 @@ export function CustomizePanel({
       />
 
       <AppearanceDisclosure
-        title="Apparence du corps"
+        title={t('Body appearance')}
         className="body-settings"
       >
         <InlineColorControl
           colorKey="color"
-          label="Teinte"
-          ariaLabel="Couleur du corps"
+          label={t('Hue')}
+          ariaLabel={t('Body color')}
           value={config.color}
           patch={patch}
           preview={preview}
@@ -211,9 +215,9 @@ export function CustomizePanel({
         <div
           className="depth-control"
           role="group"
-          aria-label="Volume du corps"
+          aria-label={t('Body depth')}
         >
-          <h3>Volume</h3>
+          <h3>{t('Depth')}</h3>
           <div>
             {DEPTHS.map((depth) => (
               <button
@@ -222,15 +226,15 @@ export function CustomizePanel({
                 aria-pressed={config.depth === depth}
                 onClick={() => patch({ depth })}
               >
-                {{ flat: 'Plat', soft: 'Doux', deep: 'Profond' }[depth]}
+                {{ flat: t('Flat'), soft: t('Soft'), deep: t('Deep') }[depth]}
               </button>
             ))}
           </div>
         </div>
         <InlineColorControl
           colorKey="outlineColor"
-          label="Contour"
-          ariaLabel="Couleur du contour"
+          label={t('Outline')}
+          ariaLabel={t('Outline color')}
           value={config.outlineColor}
           patch={patch}
           preview={preview}
@@ -239,8 +243,8 @@ export function CustomizePanel({
           setTarget={setTarget}
         />
         <ThicknessControl
-          label="Épaisseur"
-          ariaLabel="Épaisseur du contour du corps"
+          label={t('Thickness')}
+          ariaLabel={t('Body outline thickness')}
           value={config.outlineWidth}
           max={16}
           onChange={(outlineWidth) => patch({ outlineWidth })}
@@ -248,7 +252,7 @@ export function CustomizePanel({
       </AppearanceDisclosure>
 
       <ChoiceGrid
-        title="Yeux"
+        title={t('Eyes')}
         field="eyes"
         values={EYES}
         labels={eyeLabels}
@@ -256,14 +260,14 @@ export function CustomizePanel({
         kind="eyes"
         columns={3}
         collapsedCount={3}
-        itemLabel="regards"
+        itemLabel={t('eye styles')}
         onChange={(eyes) => patch({ eyes })}
       >
-        <AppearanceDisclosure title="Apparence des yeux">
+        <AppearanceDisclosure title={t('Eye appearance')}>
           <InlineColorControl
             colorKey="eyeColor"
-            label="Teinte"
-            ariaLabel={hasPupils ? 'Couleur de l’œil' : 'Couleur des yeux'}
+            label={t('Hue')}
+            ariaLabel={hasPupils ? t('Eye color') : t('Eyes color')}
             value={config.eyeColor}
             patch={patch}
             preview={preview}
@@ -274,8 +278,8 @@ export function CustomizePanel({
           {hasPupils && (
             <InlineColorControl
               colorKey="pupilColor"
-              label="Pupille"
-              ariaLabel="Couleur des pupilles"
+              label={t('Pupil')}
+              ariaLabel={t('Pupil color')}
               value={config.pupilColor}
               patch={patch}
               preview={preview}
@@ -287,8 +291,8 @@ export function CustomizePanel({
           {hasLashes && (
             <InlineColorControl
               colorKey="lashColor"
-              label="Cils"
-              ariaLabel="Couleur des cils"
+              label={t('Lashes')}
+              ariaLabel={t('Lash color')}
               value={config.lashColor}
               patch={patch}
               preview={preview}
@@ -299,8 +303,8 @@ export function CustomizePanel({
           )}
           <InlineColorControl
             colorKey="eyeOutlineColor"
-            label="Contour"
-            ariaLabel="Couleur du contour des yeux"
+            label={t('Outline')}
+            ariaLabel={t('Eye outline color')}
             value={config.eyeOutlineColor}
             patch={patch}
             preview={preview}
@@ -309,8 +313,8 @@ export function CustomizePanel({
             setTarget={setTarget}
           />
           <ThicknessControl
-            label="Épaisseur"
-            ariaLabel="Épaisseur du contour des yeux"
+            label={t('Thickness')}
+            ariaLabel={t('Eye outline thickness')}
             value={config.eyeOutlineWidth}
             max={6}
             onChange={(eyeOutlineWidth) => patch({ eyeOutlineWidth })}
@@ -319,7 +323,7 @@ export function CustomizePanel({
       </ChoiceGrid>
 
       <ChoiceGrid
-        title="Nez, museau ou bec"
+        title={t('Nose, muzzle or beak')}
         field="nose"
         values={NOSES}
         labels={noseLabels}
@@ -327,7 +331,7 @@ export function CustomizePanel({
         kind="nose"
         columns={3}
         collapsedCount={3}
-        itemLabel="nez"
+        itemLabel={t('noses')}
         onChange={(nose) =>
           patch(
             mouthsForNose(nose).includes(config.mouth)
@@ -336,11 +340,11 @@ export function CustomizePanel({
           )
         }
       >
-        <AppearanceDisclosure title="Teinte du nez">
+        <AppearanceDisclosure title={t('Nose hue')}>
           <InlineColorControl
             colorKey="noseColor"
-            label="Teinte"
-            ariaLabel="Couleur du nez"
+            label={t('Hue')}
+            ariaLabel={t('Nose color')}
             hideLabel
             value={config.noseColor}
             patch={patch}
@@ -353,7 +357,7 @@ export function CustomizePanel({
       </ChoiceGrid>
 
       <ChoiceGrid
-        title="Sourcils"
+        title={t('Eyebrows')}
         field="brows"
         values={BROWS}
         labels={browLabels}
@@ -361,14 +365,14 @@ export function CustomizePanel({
         kind="brows"
         columns={3}
         collapsedCount={3}
-        itemLabel="sourcils"
+        itemLabel={t('eyebrows')}
         onChange={(brows) => patch({ brows })}
       >
-        <AppearanceDisclosure title="Teinte des sourcils">
+        <AppearanceDisclosure title={t('Eyebrow hue')}>
           <InlineColorControl
             colorKey="browColor"
-            label="Teinte"
-            ariaLabel="Couleur des sourcils"
+            label={t('Hue')}
+            ariaLabel={t('Eyebrow color')}
             hideLabel
             value={config.browColor}
             patch={patch}
@@ -381,7 +385,7 @@ export function CustomizePanel({
       </ChoiceGrid>
 
       <ChoiceGrid
-        title="Bouche"
+        title={t('Mouth')}
         field="mouth"
         values={MOUTHS}
         labels={mouthLabels}
@@ -389,17 +393,17 @@ export function CustomizePanel({
         kind="mouth"
         columns={3}
         collapsedCount={3}
-        itemLabel="bouches"
+        itemLabel={t('mouths')}
         disabledValues={MOUTHS.filter(
           (mouth) => !mouthsForNose(config.nose).includes(mouth),
         )}
         onChange={(mouth) => patch({ mouth })}
       >
-        <AppearanceDisclosure title="Teinte de la bouche">
+        <AppearanceDisclosure title={t('Mouth hue')}>
           <InlineColorControl
             colorKey="mouthColor"
-            label="Teinte"
-            ariaLabel="Couleur de la bouche"
+            label={t('Hue')}
+            ariaLabel={t('Mouth color')}
             hideLabel
             value={config.mouthColor}
             patch={patch}
@@ -422,7 +426,7 @@ export function CustomizePanel({
         }}
       >
         <Glasses size={23} />
-        <span>Accessoires & détails</span>
+        <span>{t('Accessories & details')}</span>
         <ChevronDown className="details-chevron" size={15} />
       </button>
 
@@ -433,30 +437,30 @@ export function CustomizePanel({
       >
         <div className="details-disclosure">
           <ChoiceGrid
-            title="Tête"
+            title={t('Head')}
             field="head"
             values={availableHeads}
             labels={headLabels}
             config={config}
             columns={3}
             collapsedCount={3}
-            itemLabel="détails de tête"
+            itemLabel={t('head details')}
             onChange={(head) => patch({ head })}
           />
           <ChoiceGrid
-            title="Accessoires"
+            title={t('Accessories')}
             field="accessory"
             values={availableAccessories}
             labels={accessoryLabels}
             config={config}
             columns={3}
             collapsedCount={3}
-            itemLabel="accessoires"
+            itemLabel={t('accessories')}
             onChange={(accessory) => patch({ accessory })}
           />
 
           <section className="choice-section detail-colors">
-            <h2>Couleurs des détails</h2>
+            <h2>{t('Detail colors')}</h2>
             <div className="color-targets">
               {detailColorKeys.map((key) => (
                 <button
@@ -504,7 +508,7 @@ export function CustomizePanel({
           </section>
 
           <label className="detail-row">
-            Fond transparent dans l’aperçu
+            {t('Transparent preview background')}
             <input
               type="checkbox"
               checked={config.background.type === 'transparent'}

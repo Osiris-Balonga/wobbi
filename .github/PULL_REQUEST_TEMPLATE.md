@@ -1,18 +1,18 @@
-## Problème
+## Problem
 
-Décrivez le besoin traité.
+Describe the need this change addresses. Link the related issue.
 
 ## Solution
 
-Résumez les choix techniques et visuels.
+Summarize the technical and visual choices.
 
-## Vérifications
+## Verification
 
 - [ ] `npm run check`
 - [ ] `npm run test:production`
-- [ ] Inspection visuelle effectuée si l’interface change
-- [ ] Documentation mise à jour si le contrat ou le workflow change
+- [ ] Visually inspected any interface changes
+- [ ] Updated documentation if contracts or workflows changed
 
-## Captures
+## Screenshots
 
-Ajoutez un avant/après pour tout changement visible.
+Add before and after screenshots for visible changes.

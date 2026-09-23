@@ -1,9 +1,9 @@
-# Système visuel Wobbi
+# Wobbi visual system
 
-Le logo horizontal `public/brand/wobbi-wordmark.png` est affiché tel quel dans la barre supérieure. La mascotte par défaut reprend son galet noir asymétrique, ses grands yeux blancs et sa silhouette lavande décalée dans une géométrie SVG animable.
+The horizontal logo at `public/brand/wobbi-wordmark.png` appears unchanged in the header. The default mascot recreates its asymmetric black pebble, large white eyes, and offset lavender silhouette as animatable SVG geometry.
 
-Nunito Variable est auto-hébergée. L’interface s’appuie sur un fond lavande clair, une encre sombre et un violet d’action. La composition associe une colonne de choix visuels à une grande scène ; les réglages secondaires sont regroupés dans une section repliable et l’export s’ouvre dans un dialogue dédié.
+Nunito Variable is self-hosted. The interface uses a light lavender background, dark ink, and purple actions. Visual choices occupy one column beside a large stage; secondary settings sit in collapsible sections, and export opens in a dedicated dialog.
 
-La scène reste active sauf mise en pause ou préférence de mouvement réduit. Le suivi du pointeur est amorti, les clignements sont brefs et les réactions ponctuelles reviennent au repos. Les réglages exposent des choix compréhensibles plutôt que les paramètres techniques du moteur.
+The stage stays active unless paused or the user prefers reduced motion. Pointer gaze is smoothed, blinks are brief, and one-off reactions return to idle. Controls present understandable choices rather than the engine's technical parameters.
 
-Sur mobile, la mascotte et ses réactions précèdent les contrôles de personnalisation. Les cibles tactiles, le sélecteur de couleur et le dialogue d’export s’adaptent à la largeur disponible.
+On mobile, the mascot and its reactions appear before customization controls. Touch targets, color picker, and export dialog adapt to the available width.

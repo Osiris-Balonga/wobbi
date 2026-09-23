@@ -1,6 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 const production = process.env.WOBBI_PRODUCTION === '1';
-const baseURL = production ? 'http://127.0.0.1:4173' : 'http://127.0.0.1:5173';
+const productionPort = Number(process.env.WOBBI_PREVIEW_PORT || 4173);
+const baseURL = production
+  ? `http://127.0.0.1:${productionPort}`
+  : 'http://127.0.0.1:5173';
 export default defineConfig({
   testDir: './tests',
   testMatch: ['e2e/**/*.spec.js', 'visual/**/*.spec.js'],
@@ -21,7 +24,7 @@ export default defineConfig({
   },
   webServer: {
     command: production
-      ? 'npm run preview -- --port 4173 --strictPort'
+      ? `npm run preview -- --port ${productionPort} --strictPort`
       : 'npm run dev -- --port 5173 --strictPort',
     url: baseURL,
     reuseExistingServer: !process.env.CI && !production,

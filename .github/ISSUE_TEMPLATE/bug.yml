@@ -1,5 +1,5 @@
 name: Bug
-description: Signaler un comportement reproductible
+description: Report a reproducible behavior
 title: '[Bug] '
 labels: [bug]
 body:
@@ -7,24 +7,24 @@ body:
     id: description
     attributes:
       label: Description
-      description: Que se passe-t-il et quel résultat attendiez-vous ?
+      description: What happened, and what did you expect?
     validations:
       required: true
   - type: textarea
     id: reproduction
     attributes:
       label: Reproduction
-      description: Donnez les étapes minimales et joignez un projet JSON si nécessaire.
+      description: Give the minimum steps and attach a JSON project if needed.
     validations:
       required: true
   - type: input
     id: environment
     attributes:
-      label: Environnement
-      placeholder: Navigateur, système, version Node.js
+      label: Environment
+      placeholder: Browser, operating system, Node.js version
     validations:
       required: true
   - type: textarea
     id: evidence
     attributes:
-      label: Captures ou journaux
+      label: Screenshots or logs
