@@ -1,3 +1,5 @@
+import { es, ptBR, zhHans } from './catalog-translations.js';
+
 const en = {
   shapeLabels: {
     wobbi: 'Wobbi',
@@ -169,7 +171,7 @@ const fr = {
 };
 
 export function catalog(locale) {
-  return locale === 'fr' ? fr : en;
+  return { fr, es, 'pt-BR': ptBR, 'zh-Hans': zhHans }[locale] || en;
 }
 
 export const palette = ['#111218', '#ffffff', '#9270ff', '#61a9ff', '#ffcc45'];

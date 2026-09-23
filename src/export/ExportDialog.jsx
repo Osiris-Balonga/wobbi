@@ -25,7 +25,7 @@ import {
 import { Mascot } from '../mascot/Mascot.jsx';
 import { DisclosurePanel } from '../studio/Disclosure.jsx';
 import { catalog } from '../studio/catalog.js';
-import { useLocale } from '../i18n/index.js';
+import { localizedMascotLabel, useLocale } from '../i18n/index.js';
 import { downloadBlob } from './download.js';
 import {
   createSvg,
@@ -129,13 +129,7 @@ export function ExportDialog({ config, onClose, notify }) {
         },
         accessibility: {
           ...config.accessibility,
-          label: ['Wobbi mascot', 'Mascotte Wobbi'].includes(
-            config.accessibility.label,
-          )
-            ? locale === 'fr'
-              ? 'Mascotte Wobbi'
-              : 'Wobbi mascot'
-            : config.accessibility.label,
+          label: localizedMascotLabel(locale, config.accessibility.label),
         },
       }),
     [config, folder, format, name, locale],
@@ -337,7 +331,7 @@ export function ExportDialog({ config, onClose, notify }) {
             <div>
               {kind !== 'project' && (
                 <>
-                  <h2>Format</h2>
+                  <h2>{t('Format')}</h2>
                   <div className="format-options">
                     {formats.map(([id, label, icon]) => (
                       <button
@@ -417,7 +411,7 @@ export function ExportDialog({ config, onClose, notify }) {
                     </select>
                   </label>
                   <label>
-                    Dimensions
+                    {t('Dimensions')}
                     <select
                       value={size}
                       disabled={busy}

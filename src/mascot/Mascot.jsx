@@ -3,7 +3,7 @@ import { resolveState } from '../../packages/core/config.js';
 import { renderParts } from '../../packages/core/render.js';
 import { mountCharacter } from '../../packages/core/motion.js';
 import './mascot.css';
-import { useLocale } from '../i18n/index.js';
+import { localizedMascotLabel, useLocale } from '../i18n/index.js';
 export function Mascot({
   config,
   state = config.defaultState,
@@ -30,11 +30,7 @@ export function Mascot({
       role="img"
       aria-label={
         props['aria-label'] ||
-        (['Wobbi mascot', 'Mascotte Wobbi'].includes(config.accessibility.label)
-          ? locale === 'fr'
-            ? 'Mascotte Wobbi'
-            : 'Wobbi mascot'
-          : config.accessibility.label)
+        localizedMascotLabel(locale, config.accessibility.label)
       }
       data-state={reaction}
       data-respect-motion={config.accessibility.respectReducedMotion}
