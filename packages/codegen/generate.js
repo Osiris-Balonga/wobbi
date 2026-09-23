@@ -1,16 +1,47 @@
 import { createConfig, validateConfig } from '../core/config.js';
 
 const REACTION_LABELS = {
-  idle: 'Repos',
-  happy: 'Joie',
-  thinking: 'Réflexion',
-  surprised: 'Surprise',
-  sad: 'Peur',
-  error: 'Colère',
-  success: 'Succès',
-  loading: 'Chargement',
-  sleeping: 'Sommeil',
-  singing: 'Chant',
+  en: {
+    idle: 'Idle',
+    happy: 'Happy',
+    thinking: 'Thinking',
+    surprised: 'Surprised',
+    sad: 'Scared',
+    error: 'Angry',
+    success: 'Success',
+    loading: 'Loading',
+    sleeping: 'Sleeping',
+    singing: 'Singing',
+  },
+  fr: {
+    idle: 'Repos',
+    happy: 'Joie',
+    thinking: 'Réflexion',
+    surprised: 'Surprise',
+    sad: 'Peur',
+    error: 'Colère',
+    success: 'Succès',
+    loading: 'Chargement',
+    sleeping: 'Sommeil',
+    singing: 'Chant',
+  },
+};
+const PREVIEW_COPY = {
+  en: {
+    title: 'Wobbi preview',
+    stage: 'Mascot preview',
+    instruction: 'Try every reaction. You can also click the mascot.',
+    pause: 'Pause animation',
+    resume: 'Resume animation',
+  },
+  fr: {
+    title: 'Aperçu Wobbi',
+    stage: 'Aperçu de la mascotte',
+    instruction:
+      'Testez toutes les réactions. Cliquez aussi directement sur la mascotte.',
+    pause: 'Mettre en pause',
+    resume: 'Reprendre les animations',
+  },
 };
 
 function prepare(input) {
@@ -42,7 +73,7 @@ function escapeHtml(value) {
 }
 
 function configModule(config) {
-  return `const VALID_STATES = new Set(${JSON.stringify([...Object.keys(REACTION_LABELS)])});
+  return `const VALID_STATES = new Set(${JSON.stringify([...Object.keys(REACTION_LABELS.en)])});
 
 export const resolveState = (state) => VALID_STATES.has(state) ? state : 'idle';
 
@@ -362,8 +393,9 @@ button { font: inherit; }
 }
 `;
 
-function reactPreview(config) {
-  const buttons = Object.entries(REACTION_LABELS)
+function reactPreview(config, locale) {
+  const copy = PREVIEW_COPY[locale] || PREVIEW_COPY.en;
+  const buttons = Object.entries(REACTION_LABELS[locale] || REACTION_LABELS.en)
     .map(
       ([id, label]) =>
         `        <button aria-pressed={state === '${id}'} onClick={() => setState('${id}')}>${label}</button>`,
@@ -381,7 +413,7 @@ export function Preview() {
     <main className="preview-shell">
       <section
         className="preview-stage"
-        aria-label="Aperçu de la mascotte"
+        aria-label="${copy.stage}"
         data-gaze-zone
         style={{
           backgroundColor:
@@ -394,12 +426,12 @@ export function Preview() {
       </section>
       <aside className="preview-panel">
         <h1>{preset.name}</h1>
-        <p>Testez toutes les réactions. Cliquez aussi directement sur la mascotte.</p>
+        <p>${copy.instruction}</p>
         <div className="preview-actions">
 ${buttons}
         </div>
         <button className="play-toggle" onClick={() => setPlaying((value) => !value)}>
-          {playing ? 'Mettre en pause' : 'Reprendre les animations'}
+          {playing ? '${copy.pause}' : '${copy.resume}'}
         </button>
       </aside>
     </main>
@@ -408,8 +440,10 @@ ${buttons}
 `;
 }
 
-export function generateReactProject(input, sources) {
+export function generateReactProject(input, sources, locale = 'en') {
+  locale = locale === 'fr' ? 'fr' : 'en';
   const config = prepare(input);
+  const copy = PREVIEW_COPY[locale] || PREVIEW_COPY.en;
   const componentFiles = generateSource(config, sources);
   const files = Object.fromEntries(
     Object.entries(componentFiles).map(([name, value]) => [
@@ -439,20 +473,21 @@ export function generateReactProject(input, sources) {
         null,
         2,
       ) + '\n',
-    'index.html':
-      '<!doctype html>\n<html lang="fr">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>Aperçu Wobbi</title>\n  </head>\n  <body>\n    <div id="root"></div>\n    <script type="module" src="/src/main.jsx"></script>\n  </body>\n</html>\n',
-    'README.md': `# ${config.name} — aperçu React\n\nLancez \`npm install\`, puis \`npm run dev\`. Le composant réutilisable est exporté par \`src/index.js\` et la page de démonstration permet de tester toutes les réactions.\n`,
+    'index.html': `<!doctype html>\n<html lang="${locale}">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>${copy.title}</title>\n  </head>\n  <body>\n    <div id="root"></div>\n    <script type="module" src="/src/main.jsx"></script>\n  </body>\n</html>\n`,
+    'README.md': `# ${config.name} — React preview\n\nRun \`npm install\`, then \`npm run dev\`. The reusable component is exported from \`src/index.js\`; the demo page lets you try every reaction.\n`,
     'vite.config.js': `import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\n\nexport default defineConfig({ plugins: [react()] });\n`,
     ...files,
-    'src/Preview.jsx': reactPreview(config),
+    'src/Preview.jsx': reactPreview(config, locale),
     'src/preview.css': previewStyles,
     'src/main.jsx': `import { StrictMode } from 'react';\nimport { createRoot } from 'react-dom/client';\nimport { Preview } from './Preview.jsx';\nimport './preview.css';\n\ncreateRoot(document.getElementById('root')).render(\n  <StrictMode>\n    <Preview />\n  </StrictMode>,\n);\n`,
   };
 }
 
-export function generateVanilla(input, sources) {
+export function generateVanilla(input, sources, locale = 'en') {
+  locale = locale === 'fr' ? 'fr' : 'en';
   const config = prepare(input);
-  const controls = Object.entries(REACTION_LABELS)
+  const copy = PREVIEW_COPY[locale] || PREVIEW_COPY.en;
+  const controls = Object.entries(REACTION_LABELS[locale] || REACTION_LABELS.en)
     .map(
       ([id, label]) =>
         `    <button data-state="${id}"${id === 'idle' ? ' aria-pressed="true"' : ''}>${label}</button>`,
@@ -614,7 +649,7 @@ for (const button of buttons) {
 playButton.addEventListener('click', () => {
   playing = !playing;
   mascot.setPlaying(playing);
-  playButton.textContent = playing ? 'Mettre en pause' : 'Reprendre les animations';
+  playButton.textContent = playing ? '${copy.pause}' : '${copy.resume}';
 });
 
 window.mascot = mascot;
@@ -622,11 +657,11 @@ window.mascot = mascot;
 `;
   return {
     'index.html': `<!doctype html>
-<html lang="fr">
+<html lang="${locale}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${escapeHtml(config.name)} — aperçu Wobbi</title>
+    <title>${escapeHtml(config.name)} — ${copy.title}</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="config.js" defer></script>
     <script src="renderer.js" defer></script>
@@ -636,16 +671,16 @@ window.mascot = mascot;
   </head>
   <body>
     <main class="preview-shell">
-      <section class="preview-stage" aria-label="Aperçu de la mascotte" data-gaze-zone>
+      <section class="preview-stage" aria-label="${copy.stage}" data-gaze-zone>
         <div id="mascot"></div>
       </section>
       <aside class="preview-panel">
         <h1 id="mascot-name"></h1>
-        <p>Testez toutes les réactions. Cliquez aussi directement sur la mascotte.</p>
+        <p>${copy.instruction}</p>
         <div class="preview-actions">
 ${controls}
         </div>
-        <button class="play-toggle" id="play-toggle">Mettre en pause</button>
+        <button class="play-toggle" id="play-toggle">${copy.pause}</button>
       </aside>
     </main>
   </body>
@@ -657,6 +692,6 @@ ${controls}
     'animations.js': animationsScript,
     'mascot.js': mascotScript,
     'preview.js': previewScript,
-    'README.md': `# ${config.name} — aperçu JavaScript\n\nOuvrez directement \`index.html\` dans un navigateur : aucun serveur, paquet ou outil de build n’est nécessaire. Les responsabilités sont séparées entre \`config.js\`, \`renderer.js\`, \`animations.js\`, \`mascot.js\` et \`preview.js\`. \`mascot.js\` expose \`window.WobbiMascot.createMascot\` pour intégrer la mascotte ailleurs.\n`,
+    'README.md': `# ${config.name} — JavaScript preview\n\nOpen \`index.html\` directly in a browser: no server, package, or build tool is needed. The files separate configuration, rendering, animation, and preview behavior. Use \`window.WobbiMascot.createMascot\` from \`mascot.js\` to embed the mascot elsewhere.\n`,
   };
 }

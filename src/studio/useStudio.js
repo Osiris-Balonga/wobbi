@@ -29,7 +29,7 @@ export function useStudio() {
       setStorageError('');
     } catch {
       setStorageError(
-        'Enregistrement local indisponible. Exportez le projet pour le conserver.',
+        'Local storage is unavailable. Export the project to keep it.',
       );
     }
   }

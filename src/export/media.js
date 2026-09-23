@@ -71,13 +71,13 @@ export async function exportPng(config, state, options) {
       (blob) =>
         blob
           ? resolve(blob)
-          : reject(new Error('Impossible de créer cette image.')),
+          : reject(new Error('Could not create this image.')),
       'image/png',
     ),
   );
 }
 function checkAbort(signal) {
-  if (signal?.aborted) throw new DOMException('Export annulé', 'AbortError');
+  if (signal?.aborted) throw new DOMException('Export canceled', 'AbortError');
 }
 
 const BAYER_4 = [
@@ -157,9 +157,7 @@ export function videoSupported() {
 }
 export async function exportVideo(config, state, options, onProgress, signal) {
   if (!videoSupported())
-    throw new Error(
-      'Ce navigateur ne permet pas cet export vidéo. Choisissez GIF.',
-    );
+    throw new Error('This browser cannot export video. Choose GIF.');
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = options.size;
   const ctx = canvas.getContext('2d');
@@ -183,7 +181,7 @@ export async function exportVideo(config, state, options, onProgress, signal) {
       if (e.data.size) chunks.push(e.data);
     };
     recorder.onstop = () => resolve(new Blob(chunks, { type: 'video/webm' }));
-    recorder.onerror = () => reject(new Error('L’encodage vidéo a échoué.'));
+    recorder.onerror = () => reject(new Error('Video encoding failed.'));
   });
   recorder.start();
   try {

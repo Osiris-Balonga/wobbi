@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Pause, Play, ChevronDown } from 'lucide-react';
 import { Mascot } from '../mascot/Mascot.jsx';
-import { reactionLabels } from './catalog.js';
+import { catalog } from './catalog.js';
 import { DisclosurePanel } from './Disclosure.jsx';
+import { useLocale } from '../i18n/index.js';
 export function Stage({
   config,
   reaction,
@@ -11,6 +12,8 @@ export function Stage({
   setPlaying,
   replay,
 }) {
+  const { locale, t } = useLocale();
+  const { reactionLabels } = catalog(locale);
   const [more, setMore] = useState(false);
   const [hovered, setHovered] = useState(null);
   const primaryStates = [
@@ -26,7 +29,7 @@ export function Stage({
     <button
       key={state}
       className="reaction-tile"
-      aria-label={'Réaction : ' + reactionLabels[state]}
+      aria-label={t('Reaction: {label}', { label: reactionLabels[state] })}
       aria-pressed={reaction === state}
       onPointerEnter={() => setHovered(state)}
       onPointerLeave={() => setHovered(null)}
@@ -56,12 +59,12 @@ export function Stage({
               ? undefined
               : config.background.color,
         }}
-        aria-label="Aperçu de votre mascotte"
+        aria-label={t('Mascot preview')}
         data-gaze-zone
       >
         <button
           className="icon-button pause-button"
-          aria-label={playing ? 'Mettre en pause' : 'Animer la mascotte'}
+          aria-label={playing ? t('Pause animation') : t('Animate mascot')}
           onClick={() => setPlaying(!playing)}
         >
           {playing ? <Pause size={18} /> : <Play size={18} />}
@@ -69,7 +72,7 @@ export function Stage({
         <div className="mascot-center">
           <button
             className="mascot-hit"
-            aria-label="Faire réagir la mascotte"
+            aria-label={t('Make the mascot react')}
             onClick={() => reactTo('happy')}
           >
             <Mascot
@@ -85,13 +88,13 @@ export function Stage({
       </section>
       <section className="reactions">
         <div className="reaction-heading">
-          <h2>Faites-le réagir</h2>
+          <h2>{t('Make it react')}</h2>
           <button
             className="text-button"
             aria-expanded={more}
             onClick={() => setMore(!more)}
           >
-            {more ? 'Moins' : 'Tout voir'}{' '}
+            {more ? t('Less') : t('See all')}{' '}
             <ChevronDown className="reaction-chevron" size={13} />
           </button>
         </div>

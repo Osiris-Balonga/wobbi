@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('wobbi.locale', 'fr'));
+});
 for (const view of ['creation', 'details', 'export', 'mobile']) {
   test(view, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });

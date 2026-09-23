@@ -1,22 +1,22 @@
-name: Évolution
-description: Proposer une amélioration ciblée
-title: '[Évolution] '
+name: Enhancement
+description: Propose a focused improvement
+title: '[Enhancement] '
 labels: [enhancement]
 body:
   - type: textarea
     id: need
     attributes:
-      label: Besoin
-      description: Quel problème utilisateur faut-il résoudre ?
+      label: User need
+      description: Which user problem should this solve?
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Proposition
+      label: Proposal
     validations:
       required: true
   - type: textarea
     id: alternatives
     attributes:
-      label: Alternatives envisagées
+      label: Alternatives considered

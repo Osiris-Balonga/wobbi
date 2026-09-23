@@ -202,7 +202,7 @@ export function createConfig(overrides = {}) {
     accessibility: {
       respectReducedMotion: true,
       pauseOffscreen: true,
-      label: 'Mascotte Wobbi',
+      label: 'Wobbi mascot',
     },
   };
   const knownOverrides = Object.fromEntries(
