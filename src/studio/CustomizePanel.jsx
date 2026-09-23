@@ -183,7 +183,7 @@ export function CustomizePanel({
         config={config}
         columns={3}
         collapsedCount={3}
-        itemLabel={t('shapes')}
+        itemLabel={{ one: t('shape'), other: t('shapes') }}
         onChange={(shape) =>
           patch({
             shape,
@@ -260,7 +260,7 @@ export function CustomizePanel({
         kind="eyes"
         columns={3}
         collapsedCount={3}
-        itemLabel={t('eye styles')}
+        itemLabel={{ one: t('eye style'), other: t('eye styles') }}
         onChange={(eyes) => patch({ eyes })}
       >
         <AppearanceDisclosure title={t('Eye appearance')}>
@@ -331,7 +331,7 @@ export function CustomizePanel({
         kind="nose"
         columns={3}
         collapsedCount={3}
-        itemLabel={t('noses')}
+        itemLabel={{ one: t('nose'), other: t('noses') }}
         onChange={(nose) =>
           patch(
             mouthsForNose(nose).includes(config.mouth)
@@ -365,7 +365,7 @@ export function CustomizePanel({
         kind="brows"
         columns={3}
         collapsedCount={3}
-        itemLabel={t('eyebrows')}
+        itemLabel={{ one: t('eyebrow'), other: t('eyebrows') }}
         onChange={(brows) => patch({ brows })}
       >
         <AppearanceDisclosure title={t('Eyebrow hue')}>
@@ -393,7 +393,7 @@ export function CustomizePanel({
         kind="mouth"
         columns={3}
         collapsedCount={3}
-        itemLabel={t('mouths')}
+        itemLabel={{ one: t('mouth'), other: t('mouths') }}
         disabledValues={MOUTHS.filter(
           (mouth) => !mouthsForNose(config.nose).includes(mouth),
         )}
@@ -444,7 +444,7 @@ export function CustomizePanel({
             config={config}
             columns={3}
             collapsedCount={3}
-            itemLabel={t('head details')}
+            itemLabel={{ one: t('head detail'), other: t('head details') }}
             onChange={(head) => patch({ head })}
           />
           <ChoiceGrid
@@ -455,7 +455,7 @@ export function CustomizePanel({
             config={config}
             columns={3}
             collapsedCount={3}
-            itemLabel={t('accessories')}
+            itemLabel={{ one: t('accessory'), other: t('accessories') }}
             onChange={(accessory) => patch({ accessory })}
           />
 

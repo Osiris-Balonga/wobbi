@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Mascot } from '../mascot/Mascot.jsx';
 import { DisclosurePanel } from './Disclosure.jsx';
-import { useLocale } from '../i18n/index.js';
+import { formatChoiceCount, useLocale } from '../i18n/index.js';
 
 function contrastInk(hex) {
   const channels = hex
@@ -31,7 +31,7 @@ export function ChoiceGrid({
   itemLabel = 'options',
   disabledValues = [],
 }) {
-  const { t } = useLocale();
+  const { locale, t } = useLocale();
   const selectedIsHidden = values.indexOf(config[field]) >= collapsedCount;
   const [expanded, setExpanded] = useState(() => selectedIsHidden);
   const canToggle = values.length > collapsedCount;
@@ -110,10 +110,11 @@ export function ChoiceGrid({
         >
           {showAll
             ? t('Show fewer {item}', { item: title.toLowerCase() })
-            : t('Show {count} more {item}', {
-                count: values.length - collapsedCount,
-                item: itemLabel,
-              })}
+            : formatChoiceCount(
+                locale,
+                values.length - collapsedCount,
+                itemLabel,
+              )}
           <ChevronDown size={15} aria-hidden="true" />
         </button>
       )}

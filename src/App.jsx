@@ -140,6 +140,9 @@ export default function App() {
             >
               <option value="en">EN</option>
               <option value="fr">FR</option>
+              <option value="es">ES</option>
+              <option value="pt-BR">PT</option>
+              <option value="zh-Hans">中文</option>
             </select>
           </label>
           <button

@@ -25,6 +25,42 @@ const REACTION_LABELS = {
     sleeping: 'Sommeil',
     singing: 'Chant',
   },
+  es: {
+    idle: 'Reposo',
+    happy: 'Alegría',
+    thinking: 'Pensando',
+    surprised: 'Sorpresa',
+    sad: 'Miedo',
+    error: 'Enfado',
+    success: 'Éxito',
+    loading: 'Espera',
+    sleeping: 'Dormido',
+    singing: 'Cantando',
+  },
+  'pt-BR': {
+    idle: 'Repouso',
+    happy: 'Alegria',
+    thinking: 'Pensando',
+    surprised: 'Surpresa',
+    sad: 'Medo',
+    error: 'Raiva',
+    success: 'Sucesso',
+    loading: 'Aguardando',
+    sleeping: 'Dormindo',
+    singing: 'Cantando',
+  },
+  'zh-Hans': {
+    idle: '待机',
+    happy: '开心',
+    thinking: '思考',
+    surprised: '惊讶',
+    sad: '害怕',
+    error: '生气',
+    success: '成功',
+    loading: '等待',
+    sleeping: '睡觉',
+    singing: '唱歌',
+  },
 };
 const PREVIEW_COPY = {
   en: {
@@ -41,6 +77,29 @@ const PREVIEW_COPY = {
       'Testez toutes les réactions. Cliquez aussi directement sur la mascotte.',
     pause: 'Mettre en pause',
     resume: 'Reprendre les animations',
+  },
+  es: {
+    title: 'Vista previa de Wobbi',
+    stage: 'Vista previa de la mascota',
+    instruction:
+      'Prueba todas las reacciones. También puedes hacer clic en la mascota.',
+    pause: 'Pausar animación',
+    resume: 'Reanudar animación',
+  },
+  'pt-BR': {
+    title: 'Prévia do Wobbi',
+    stage: 'Prévia do mascote',
+    instruction:
+      'Experimente todas as reações. Você também pode clicar no mascote.',
+    pause: 'Pausar animação',
+    resume: 'Retomar animação',
+  },
+  'zh-Hans': {
+    title: 'Wobbi 预览',
+    stage: '吉祥物预览',
+    instruction: '试试所有动作，也可以直接点击吉祥物。',
+    pause: '暂停动画',
+    resume: '继续播放动画',
   },
 };
 
@@ -441,7 +500,7 @@ ${buttons}
 }
 
 export function generateReactProject(input, sources, locale = 'en') {
-  locale = locale === 'fr' ? 'fr' : 'en';
+  locale = Object.hasOwn(PREVIEW_COPY, locale) ? locale : 'en';
   const config = prepare(input);
   const copy = PREVIEW_COPY[locale] || PREVIEW_COPY.en;
   const componentFiles = generateSource(config, sources);
@@ -484,7 +543,7 @@ export function generateReactProject(input, sources, locale = 'en') {
 }
 
 export function generateVanilla(input, sources, locale = 'en') {
-  locale = locale === 'fr' ? 'fr' : 'en';
+  locale = Object.hasOwn(PREVIEW_COPY, locale) ? locale : 'en';
   const config = prepare(input);
   const copy = PREVIEW_COPY[locale] || PREVIEW_COPY.en;
   const controls = Object.entries(REACTION_LABELS[locale] || REACTION_LABELS.en)

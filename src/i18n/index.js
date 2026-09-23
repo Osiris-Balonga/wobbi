@@ -1,7 +1,23 @@
 import { createContext, useContext } from 'react';
+import { spanish } from './es.js';
+import { portugueseBrazil } from './pt-BR.js';
+import { simplifiedChinese } from './zh-Hans.js';
 
-export const supportedLocales = ['en', 'fr'];
+export const supportedLocales = ['en', 'fr', 'es', 'pt-BR', 'zh-Hans'];
 export const STORAGE_KEY = 'wobbi.locale';
+const mascotLabels = {
+  en: 'Wobbi mascot',
+  fr: 'Mascotte Wobbi',
+  es: 'Mascota Wobbi',
+  'pt-BR': 'Mascote Wobbi',
+  'zh-Hans': 'Wobbi 吉祥物',
+};
+
+export function localizedMascotLabel(locale, label) {
+  return Object.values(mascotLabels).includes(label)
+    ? mascotLabels[locale] || mascotLabels.en
+    : label;
+}
 const metadata = {
   en: {
     title: 'Wobbi — Create and animate your mascot',
@@ -25,6 +41,37 @@ const metadata = {
     structuredDescription:
       'Créez, animez et exportez une mascotte expressive directement dans votre navigateur.',
     ogLocale: 'fr_FR',
+  },
+  es: {
+    title: 'Wobbi — Crea y anima tu mascota',
+    description:
+      'Crea, anima y exporta tu mascota Wobbi. Personaliza su forma, expresión, colores y reacciones en el navegador.',
+    socialDescription:
+      'Personaliza una mascota expresiva, anima sus reacciones y expórtala para tus proyectos.',
+    imageAlt: 'Estudio Wobbi con su mascota y opciones de personalización',
+    structuredDescription:
+      'Crea, anima y exporta una mascota expresiva en el navegador.',
+    ogLocale: 'es_ES',
+  },
+  'pt-BR': {
+    title: 'Wobbi — Crie e anime seu mascote',
+    description:
+      'Crie, anime e exporte seu mascote Wobbi. Personalize a forma, a expressão, as cores e as reações no navegador.',
+    socialDescription:
+      'Personalize um mascote expressivo, anime suas reações e exporte para seus projetos.',
+    imageAlt: 'Estúdio Wobbi com mascote e opções de personalização',
+    structuredDescription:
+      'Crie, anime e exporte um mascote expressivo no navegador.',
+    ogLocale: 'pt_BR',
+  },
+  'zh-Hans': {
+    title: 'Wobbi — 创建并设计你的吉祥物动画',
+    description:
+      '在浏览器中创建、制作动画并导出 Wobbi 吉祥物，自由定制形状、表情、颜色和动作。',
+    socialDescription: '定制生动的吉祥物，制作动作动画，并导出到你的项目中。',
+    imageAlt: 'Wobbi 工作室的吉祥物和自定义选项',
+    structuredDescription: '在浏览器中创建、制作动画并导出生动的吉祥物。',
+    ogLocale: 'zh_CN',
   },
 };
 
@@ -85,6 +132,7 @@ const french = {
   Name: 'Nom',
   'Mascot name': 'Nom de la mascotte',
   Shape: 'Forme',
+  shape: 'forme',
   shapes: 'formes',
   'Body appearance': 'Apparence du corps',
   Hue: 'Teinte',
@@ -99,6 +147,7 @@ const french = {
   Thickness: 'Épaisseur',
   'Body outline thickness': 'Épaisseur du contour du corps',
   Eyes: 'Yeux',
+  'eye style': 'regard',
   'eye styles': 'regards',
   'Eye appearance': 'Apparence des yeux',
   'Eye color': 'Couleur de l’œil',
@@ -110,22 +159,27 @@ const french = {
   'Eye outline color': 'Couleur du contour des yeux',
   'Eye outline thickness': 'Épaisseur du contour des yeux',
   'Nose, muzzle or beak': 'Nez, museau ou bec',
+  nose: 'nez',
   noses: 'nez',
   'Nose hue': 'Teinte du nez',
   'Nose color': 'Couleur du nez',
   Eyebrows: 'Sourcils',
+  eyebrow: 'sourcil',
   eyebrows: 'sourcils',
   'Eyebrow hue': 'Teinte des sourcils',
   'Eyebrow color': 'Couleur des sourcils',
   Mouth: 'Bouche',
+  mouth: 'bouche',
   mouths: 'bouches',
   'Mouth hue': 'Teinte de la bouche',
   'Mouth color': 'Couleur de la bouche',
   Nose: 'Nez',
   'Accessories & details': 'Accessoires & détails',
   Head: 'Tête',
+  'head detail': 'détail de tête',
   'head details': 'détails de tête',
   Accessories: 'Accessoires',
+  accessory: 'accessoire',
   accessories: 'accessoires',
   'Detail colors': 'Couleurs des détails',
   'Transparent preview background': 'Fond transparent dans l’aperçu',
@@ -182,6 +236,8 @@ const french = {
   'Choose how you want to use it.':
     'Choisissez comment vous voulez l’utiliser.',
   'Close export dialog': 'Fermer l’export',
+  Format: 'Format',
+  Dimensions: 'Dimensions',
   'Component name': 'Nom du composant',
   'Advanced options': 'Options avancées',
   'Suggested folder': 'Dossier conseillé',
@@ -222,17 +278,38 @@ const french = {
 
 export function resolveLocale(preferences = []) {
   for (const preference of preferences) {
-    const language = String(preference).toLowerCase().split('-')[0];
-    if (supportedLocales.includes(language)) return language;
+    const tag = String(preference).toLowerCase().replaceAll('_', '-');
+    const language = tag.split('-')[0];
+    if (language === 'zh' && !/\b(tw|hk|mo|hant)\b/.test(tag)) return 'zh-Hans';
+    if (language === 'pt') return 'pt-BR';
+    if (['en', 'fr', 'es'].includes(language)) return language;
   }
   return 'en';
 }
 
+export const messageCatalogs = {
+  fr: french,
+  es: spanish,
+  'pt-BR': portugueseBrazil,
+  'zh-Hans': simplifiedChinese,
+};
+
 export function translate(locale, key, values = {}) {
-  const template = (locale === 'fr' && french[key]) || key;
+  const messages = messageCatalogs[locale];
+  const template = messages?.[key] || key;
   return template.replace(/\{(\w+)\}/g, (_, name) =>
     String(values[name] ?? ''),
   );
+}
+
+export function formatChoiceCount(locale, count, labels) {
+  const category = new Intl.PluralRules(locale).select(count);
+  const item =
+    typeof labels === 'string' ? labels : labels[category] || labels.other;
+  return translate(locale, 'Show {count} more {item}', {
+    count: new Intl.NumberFormat(locale).format(count),
+    item,
+  });
 }
 
 // Standalone component renders retain the original French labels; the app always uses LocaleProvider.
