@@ -24,7 +24,7 @@ The studio is available at http://127.0.0.1:5173.
 - A 40-step history and local saving.
 - Strict JSON import for projects in the current format.
 - React, Vue, standalone JavaScript, PNG, SVG, GIF, WebM, and JSON project exports.
-- English and French interface, selected from browser preferences or the language menu.
+- English, French, Spanish, Brazilian Portuguese, and Simplified Chinese interface, selected from browser preferences or the language menu.
 
 Export previews use the project background color. Transparency is available for image formats that support it.
 
