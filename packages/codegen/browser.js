@@ -9,15 +9,19 @@ import {
   generateVanilla,
   generateVueSource,
 } from './generate.js';
-export const generateVanillaFiles = (config) =>
-  generateVanilla(config, {
-    config: configSource,
-    renderModel: renderModelSource,
-    renderEffects: renderEffectsSource,
-    render: renderSource,
-    motion: motionSource,
-    svgAttributes: svgAttributesSource,
-  });
+export const generateVanillaFiles = (config, locale = 'en') =>
+  generateVanilla(
+    config,
+    {
+      config: configSource,
+      renderModel: renderModelSource,
+      renderEffects: renderEffectsSource,
+      render: renderSource,
+      motion: motionSource,
+      svgAttributes: svgAttributesSource,
+    },
+    locale,
+  );
 export const generateFiles = (config) =>
   generateSource(config, {
     config: configSource,

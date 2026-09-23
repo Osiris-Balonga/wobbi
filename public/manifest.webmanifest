@@ -1,9 +1,9 @@
 {
   "id": "/",
-  "name": "Wobbi — Studio de mascottes interactives",
+  "name": "Wobbi — Interactive mascot studio",
   "short_name": "Wobbi",
-  "description": "Créez, animez et exportez votre mascotte interactive.",
-  "lang": "fr",
+  "description": "Create, animate, and export your interactive mascot.",
+  "lang": "en",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

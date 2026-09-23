@@ -7,6 +7,9 @@ import { pathToFileURL } from 'node:url';
 import { build } from 'esbuild';
 import { unzipSync, strFromU8 } from 'fflate';
 const mascot = (page) => page.locator('.mascot-hit svg');
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('wobbi.locale', 'fr'));
+});
 async function download(page, name) {
   const promise = page.waitForEvent('download');
   await page.getByRole('button', { name, exact: true }).click();

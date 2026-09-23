@@ -1,5 +1,5 @@
-# Sécurité
+# Security
 
-Ne publiez pas de vulnérabilité exploitable dans une issue publique. Utilisez le formulaire de signalement privé de sécurité du dépôt GitHub lorsqu’il est disponible et indiquez les étapes de reproduction, l’impact estimé et la version concernée.
+Do not publish an exploitable vulnerability in a public issue. Use the repository's private GitHub security reporting form when available, and include reproduction steps, the estimated impact, and the affected version.
 
-Les versions prises en charge sont celles présentes sur la branche principale. Les données de projet importées doivent être considérées comme non fiables.
+Supported versions are those on the main branch. Treat imported project data as untrusted.

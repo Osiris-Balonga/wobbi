@@ -1,18 +1,18 @@
-# Contribuer à Wobbi
+# Contributing to Wobbi
 
-## Installation
+## Setup
 
-Utilisez Node.js 22, puis installez exactement les dépendances verrouillées :
+Use Node.js 24, then install the locked dependencies:
 
 ```sh
 npm ci
 ```
 
-Créez une branche courte et explicite (`feature/...`, `fix/...` ou `release/...`). Ne mélangez pas une mise à jour fonctionnelle avec des changements sans rapport.
+Create a short, descriptive branch from `dev` (`feature/...`, `fix/...`, `docs/...`, or `chore/...`) and open a pull request into `dev`. Release pull requests go from `dev` into `main`. Keep unrelated changes in separate pull requests.
 
-## Qualité requise
+## Required checks
 
-Avant une pull request :
+Before opening a pull request, run:
 
 ```sh
 npm run check
@@ -20,10 +20,12 @@ npm run test:production
 npm run test:visual
 ```
 
-Les changements d’interface doivent inclure les tests de comportement pertinents. Mettez à jour une capture de référence uniquement après inspection visuelle du résultat, jamais pour faire disparaître un échec inexpliqué.
+Interface changes should include relevant behavior checks. Update a reference screenshot only after inspecting the result, never to hide an unexplained failure.
 
-Les imports de projet sont des entrées non fiables : validez toujours le document brut avant de construire une configuration. Les exports doivent rester autonomes et conserver le même rendu que le studio.
+Project imports are untrusted input: validate the raw document before building a configuration. Exports must remain independent and preserve the studio rendering.
+
+Keep repository documentation and developer-facing text in English. Localize product text in the supported languages; avoid changing stable configuration keys or export APIs just to translate labels.
 
 ## Pull requests
 
-Décrivez le problème, la solution, les vérifications effectuées et les impacts visuels. Une pull request doit être limitée, relisible et verte dans la CI avant fusion.
+Link the related issue and describe the problem, solution, checks performed, and visual impact. Pull requests should be focused, reviewable, and green in CI before merging.

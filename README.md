@@ -1,35 +1,36 @@
 # Wobbi
 
-Studio web local pour créer, animer et exporter une mascotte réutilisable. Le rendu SVG, les aperçus et les exports partagent le même moteur afin de conserver la forme, les couleurs et la profondeur choisies.
+A local web studio for creating, animating, and exporting a reusable mascot. The SVG renderer, previews, and exports share the same engine, preserving the selected shape, colors, and depth.
 
-## Prérequis
+## Requirements
 
 - Node.js 24
-- npm 10 ou une version compatible avec le lockfile
+- npm compatible with the lockfile
 
-## Démarrer
+## Get started
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Le studio est disponible sur http://127.0.0.1:5173.
+The studio is available at http://127.0.0.1:5173.
 
-## Fonctionnalités
+## Features
 
-- 8 silhouettes, 12 regards, 8 bouches, détails de tête et accessoires compatibles avec chaque forme.
-- Profondeur plate, douce ou profonde, couleurs indépendantes et fond personnalisable.
-- 10 réactions animées, suivi du regard, pause et respect de la préférence système de réduction des animations.
-- Historique de 40 modifications et sauvegarde locale.
-- Import JSON strict des projets au format courant.
-- Exports React, Vue, JavaScript autonome, PNG, SVG, GIF, WebM et projet JSON.
+- 8 shapes, 12 eye styles, 8 mouths, head details, and accessories compatible with each shape.
+- Flat, soft, or deep shading; independent colors; and a customizable background.
+- 10 animated reactions, gaze tracking, pause, and support for reduced motion preferences.
+- A 40-step history and local saving.
+- Strict JSON import for projects in the current format.
+- React, Vue, standalone JavaScript, PNG, SVG, GIF, WebM, and JSON project exports.
+- English and French interface, selected from browser preferences or the language menu.
 
-Les aperçus exportés utilisent la couleur de fond du projet. La transparence reste un choix réservé aux formats d’image qui la prennent en charge.
+Export previews use the project background color. Transparency is available for image formats that support it.
 
-## Intégrer un export
+## Use an export
 
-Le ZIP React contient un composant, ses styles, le preset et les modules de rendu et d’animation. Il peut aussi être utilisé comme composant client dans Next.js.
+The React ZIP contains a component, its styles, the preset, and rendering and animation modules. It can also be used as a Next.js client component.
 
 ```jsx
 import { Wobbi } from './mascot';
@@ -37,7 +38,7 @@ import { Wobbi } from './mascot';
 <Wobbi state="loading" size={160} interactive playing />;
 ```
 
-Le ZIP JavaScript contient une démonstration autonome ouvrable directement depuis `index.html` et une API sans dépendance à React :
+The JavaScript ZIP includes a standalone demo that opens directly from `index.html`, plus an API that does not require React:
 
 ```js
 const mascot = window.WobbiMascot.createMascot(
@@ -49,7 +50,7 @@ mascot.setPlaying(false);
 mascot.destroy();
 ```
 
-## Vérifier
+## Verify
 
 ```sh
 npm run check
@@ -57,15 +58,16 @@ npm run test:production
 npm run test:visual
 ```
 
-`npm run check` vérifie le formatage, ESLint, les tests unitaires, composants, intégration, contrats, CLI et accessibilité, puis produit le bundle de production. Les scénarios Playwright couvrent les parcours navigateur et les fichiers téléchargés.
+`npm run check` runs formatting, ESLint, unit, component, integration, contract, CLI, and accessibility tests, then builds the production bundle. Playwright covers browser flows and downloaded files.
 
 ## Architecture
 
-- `packages/core` : contrat de configuration, géométrie SVG et moteur d’animation.
-- `packages/codegen` : génération des livrables React, Vue et JavaScript.
-- `packages/registry` et `packages/cli` : presets locaux et installation en ligne de commande.
-- `src/studio` : personnalisation, scène, couleurs et historique.
-- `src/export` : dialogue d’export et encodage des médias.
-- `public/brand` : ressources de marque utilisées par l’interface.
+- `packages/core`: configuration contract, SVG geometry, and animation engine.
+- `packages/codegen`: React, Vue, and JavaScript output generation.
+- `packages/registry` and `packages/cli`: local presets and command-line installation.
+- `src/studio`: customization, stage, colors, and history.
+- `src/export`: export dialog and media encoding.
+- `src/i18n`: interface translations and locale selection.
+- `public/brand`: brand assets used by the interface.
 
-Consultez [CONTRIBUTING.md](./CONTRIBUTING.md) pour le workflow de contribution et [docs/architecture.md](./docs/architecture.md) pour les responsabilités des modules.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the contribution workflow and [docs/architecture.md](./docs/architecture.md) for module responsibilities.

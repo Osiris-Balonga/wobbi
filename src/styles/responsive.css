@@ -275,7 +275,14 @@
 }
 @media (max-width: 480px) {
   .brand-image img {
-    width: 124px;
+    width: 110px;
+  }
+  .app-header .icon-button {
+    width: 34px;
+    height: 38px;
+  }
+  .language-choice select {
+    width: 49px;
   }
   .export-button {
     width: 40px;

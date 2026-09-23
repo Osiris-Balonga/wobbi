@@ -16,5 +16,5 @@ const sources = {
 };
 export const generateFiles = (config) => generateSource(config, sources);
 export const generateVueFiles = (config) => generateVueSource(config, sources);
-export const generateVanillaFiles = (config) =>
-  generateVanilla(config, sources);
+export const generateVanillaFiles = (config, locale = 'en') =>
+  generateVanilla(config, sources, locale);

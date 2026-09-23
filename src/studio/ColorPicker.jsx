@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { palette } from './catalog.js';
 import { hexToHsv, hsvToHex } from './color.js';
-export function Swatches({ value, onChange, onCustom, label = 'Couleur' }) {
+import { useLocale } from '../i18n/index.js';
+export function Swatches({ value, onChange, onCustom, label }) {
+  const { t } = useLocale();
+  label ??= t('Color');
   return (
     <div className="swatches">
       {palette.map((color) => (
@@ -20,9 +23,9 @@ export function Swatches({ value, onChange, onCustom, label = 'Couleur' }) {
           type="button"
           className="rainbow-button"
           aria-label={
-            label === 'Couleur'
-              ? 'Couleur personnalisée'
-              : label + ' personnalisée'
+            label === t('Color')
+              ? t('Custom color')
+              : t('Custom {label}', { label })
           }
           onClick={onCustom}
         >
@@ -34,6 +37,7 @@ export function Swatches({ value, onChange, onCustom, label = 'Couleur' }) {
 }
 
 function HexInput({ value, onChange, onClose }) {
+  const { t } = useLocale();
   const [error, setError] = useState('');
   return (
     <div className="hex-controls">
@@ -48,7 +52,7 @@ function HexInput({ value, onChange, onClose }) {
           if (/^#[0-9a-f]{6}$/i.test(next)) {
             setError('');
             onChange(next);
-          } else setError('Six chiffres après #.');
+          } else setError(t('Six digits after #.'));
         }}
       />
       <span className="color-error">{error}</span>
@@ -58,7 +62,7 @@ function HexInput({ value, onChange, onClose }) {
         disabled={!!error}
         onClick={onClose}
       >
-        Terminé
+        {t('Done')}
       </button>
     </div>
   );
@@ -72,6 +76,7 @@ export function ColorPicker({
   onClose,
   label,
 }) {
+  const { t } = useLocale();
   const [draft, setDraft] = useState(() => ({ value, hsv: hexToHsv(value) }));
   if (value !== draft.value) setDraft({ value, hsv: hexToHsv(value) });
   const { hsv } = draft;
@@ -115,7 +120,7 @@ export function ColorPicker({
     <div
       className="color-picker"
       role="group"
-      aria-label={'Couleur personnalisée : ' + label}
+      aria-label={t('Custom color: {label}', { label })}
     >
       <Swatches value={value} onChange={onChange} />
       <div className="picker-layout">
@@ -129,9 +134,9 @@ export function ColorPicker({
           />
         </div>
         <label className="hue-control">
-          <span>Teinte</span>
+          <span>{t('Hue')}</span>
           <input
-            aria-label="Teinte"
+            aria-label={t('Hue')}
             type="range"
             min="0"
             max="359"
@@ -150,7 +155,7 @@ export function ColorPicker({
       </div>
       <div className="sr-only">
         <label>
-          Saturation
+          {t('Saturation')}
           <input
             type="range"
             min="0"
@@ -162,7 +167,7 @@ export function ColorPicker({
           />
         </label>
         <label>
-          Luminosité
+          {t('Brightness')}
           <input
             type="range"
             min="0"

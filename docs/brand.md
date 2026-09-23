@@ -1,14 +1,14 @@
-# Identité Wobbi
+# Wobbi brand identity
 
-Le symbole associe une silhouette noire, un décalage lavande et deux yeux blancs. Les ressources finales ont un rôle et un fond explicites :
+The symbol combines a black silhouette, a lavender offset, and two white eyes. Final assets have explicit roles and backgrounds:
 
-| Fichier                   | Usage                                | Fond              |
-| ------------------------- | ------------------------------------ | ----------------- |
-| `wobbi-symbol.png`        | Favicon et icône d’application       | Alpha transparent |
-| `wobbi-wordmark.png`      | Barre supérieure et surfaces claires | Blanc opaque      |
-| `wobbi-wordmark-dark.png` | Surfaces sombres                     | Charbon opaque    |
-| `manifest.json`           | Dimensions, couleurs et rôles        | JSON              |
+| File                      | Use                           | Background        |
+| ------------------------- | ----------------------------- | ----------------- |
+| `wobbi-symbol.png`        | Favicon and application icon  | Transparent alpha |
+| `wobbi-wordmark.png`      | Header and light surfaces     | Opaque white      |
+| `wobbi-wordmark-dark.png` | Dark surfaces                 | Opaque charcoal   |
+| `manifest.json`           | Dimensions, colors, and roles | JSON              |
 
-L’interface utilise le logo horizontal clair dans la barre supérieure. Le moteur SVG recompose la mascotte par défaut afin qu’elle reste animable, tandis que les fichiers raster de marque restent inchangés.
+The interface uses the light horizontal logo in the header. The SVG engine reconstructs the default mascot so it remains animatable, while the raster brand files remain unchanged.
 
-La palette de référence est `#111218` pour l’encre, `#9270ff` pour la lavande et `#ffffff` pour les yeux. Les variantes de logo ont un fond opaque explicite ; seul le symbole carré utilise la transparence.
+The reference palette uses `#111218` for ink, `#9270ff` for lavender, and `#ffffff` for eyes. Logo variants have explicit opaque backgrounds; only the square symbol uses transparency.

@@ -145,6 +145,17 @@ p {
   gap: 10px;
   margin-left: auto;
 }
+.language-choice select {
+  width: 55px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
 .icon-button {
   width: 42px;
   height: 42px;

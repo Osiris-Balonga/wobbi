@@ -2,6 +2,9 @@ import { test, expect } from '@playwright/test';
 import { createConfig } from '../../packages/core/config.js';
 
 const mascot = (page) => page.locator('.mascot-hit svg');
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('wobbi.locale', 'fr'));
+});
 
 async function restore(page, config) {
   await page.addInitScript((storedConfig) => {

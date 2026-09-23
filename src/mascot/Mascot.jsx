@@ -3,6 +3,7 @@ import { resolveState } from '../../packages/core/config.js';
 import { renderParts } from '../../packages/core/render.js';
 import { mountCharacter } from '../../packages/core/motion.js';
 import './mascot.css';
+import { useLocale } from '../i18n/index.js';
 export function Mascot({
   config,
   state = config.defaultState,
@@ -12,6 +13,7 @@ export function Mascot({
   interactive = false,
   ...props
 }) {
+  const { locale } = useLocale();
   const ref = useRef(null);
   const reaction = resolveState(state);
   useEffect(
@@ -26,7 +28,14 @@ export function Mascot({
       width={size}
       height={size}
       role="img"
-      aria-label={props['aria-label'] || config.accessibility.label}
+      aria-label={
+        props['aria-label'] ||
+        (['Wobbi mascot', 'Mascotte Wobbi'].includes(config.accessibility.label)
+          ? locale === 'fr'
+            ? 'Mascotte Wobbi'
+            : 'Wobbi mascot'
+          : config.accessibility.label)
+      }
       data-state={reaction}
       data-respect-motion={config.accessibility.respectReducedMotion}
       {...props}
