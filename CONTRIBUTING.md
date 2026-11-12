@@ -22,6 +22,8 @@ npm run test:visual
 
 Interface changes should include relevant behavior checks. Update a reference screenshot only after inspecting the result, never to hide an unexplained failure.
 
+The dependency overrides for ESLint 10 and `@eslint/config-array` 0.23 keep their glob matching on patched minimatch 11 while upstream still requests minimatch 10. These consumers use the supported `Minimatch` constructor and `match()` API. When changing lint dependencies, verify the linted file set, React Hooks rule enforcement, syntax rejection, and ignored build output. Remove the overrides once upstream accepts a patched version.
+
 Project imports are untrusted input: validate the raw document before building a configuration. Exports must remain independent and preserve the studio rendering.
 
 Keep repository documentation and developer-facing text in English. Localize product text in the supported languages; avoid changing stable configuration keys or export APIs just to translate labels.
