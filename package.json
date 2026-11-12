@@ -38,6 +38,14 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
+  "overrides": {
+    "eslint@^10.10.0": {
+      "minimatch": "^11.0.8"
+    },
+    "@eslint/config-array@0.23": {
+      "minimatch": "^11.0.8"
+    }
+  },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",
